@@ -1,1 +1,19 @@
+# Python cache and compiled files
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Local config
 config-bd.toml
+
+# Logs and temp files
+*.log
+tmp/
+
+# Editor / OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
