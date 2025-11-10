@@ -1,7 +1,7 @@
 # fichier de configuration au SGBD postgreSQL
 
 POSTGRESQL_SERVER = "bd-pedago.univ-lyon1.fr"
-POSTGRESQL_USER = "p1234567"  # à remplacer par votre numéro étudiant
-POSTGRESQL_PASSWORD = "remplace42moi"  # à remplacer par le mot de passe fourni dans Tomuss (pas votre mot de passe UCBL !)
-POSTGRESQL_DATABASE = "p1234567"  # à remplacer par votre numéro étudiant
-POSTGRESQL_SCHEMA = "tp1"  # à remplacer par le nom du schéma contenant vos tables (public, tp1, series, ...)
+POSTGRESQL_USER = "p2303050"  # à remplacer par votre numéro étudiant
+POSTGRESQL_PASSWORD = "Macaroni:Dedicate_83"  # à remplacer par le mot de passe fourni dans Tomuss (pas votre mot de passe UCBL !)
+POSTGRESQL_DATABASE = "p2303050"  # à remplacer par votre numéro étudiant
+POSTGRESQL_SCHEMA = "jeu_de_morpion"  # à remplacer par le nom du schéma contenant vos tables (public, tp1, series, ...)
