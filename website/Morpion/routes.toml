@@ -6,4 +6,4 @@
 [[routes]]
 url = ""
 controleur = "controleurs/test.py"
-template = "templates/test.html"
+template = "templates/base.html"
