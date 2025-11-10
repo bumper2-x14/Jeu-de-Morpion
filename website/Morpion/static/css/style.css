@@ -6,3 +6,12 @@ body {
 header {
     background-color: darkgray;
 }
+
+nav{
+    flex : 2;
+    background-color: grey;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+	margin-left: 1em;
+    line-height: 2em;
+}
