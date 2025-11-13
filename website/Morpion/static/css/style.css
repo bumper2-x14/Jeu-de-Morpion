@@ -1,17 +1,176 @@
+/* --- STYLES GLOBAUX --- */
 body {
-    background-color: black;
-    color: wheat;
+    background-color: black;           /* couleur de fond de la page */
+    color: wheat;                      /* couleur du texte */
+    font-family: Arial, sans-serif;    /* police générale */
+    margin: 0;                          /* supprime les marges par défaut du body */
 }
 
+/* --- HEADER --- */
 header {
     background-color: darkgray;
+    padding: 1em;
+    text-align: center;
+    width: auto;
+    top: 0;
+    left: 0;
+    z-index: 1000;        /* au-dessus des autres éléments */
 }
 
-nav{
-    flex : 2;
+/* --- CONTENEUR PRINCIPAL (NAV + MAIN) --- */
+.layout, #center_id {
+    display: flex;                     /* affiche nav et main côte à côte */
+    min-height: 100vh;                 /* occupe toute la hauteur de la fenêtre */
+}
+
+/* --- NAVIGATION SIDEBAR --- */
+nav {
+    display: flex;
+    flex-direction: column;       /* pour empiler les items verticalement */
+    width: 200px;                 /* largeur fixe du menu */
     background-color: grey;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-	margin-left: 1em;
-    line-height: 2em;
+    color: white;
+    padding: 1em;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.3); 
+    position: fixed;              /* flotte sur le côté */
+    top: 150px;                   /* décale sous le header */
+    left: 10px;                   /* espace depuis le bord gauche */
+    height: auto;                 /* hauteur automatique selon le contenu */
+    border-radius: 10px;
+}
+
+
+/* --- LISTE DU MENU --- */
+nav ul {
+    position: relative;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    border-color: black;
+}
+
+nav li a{
+    display: block;
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+
+nav a:hover {
+    background-color: #555555;
+    color: white;
+}
+
+/* --- CONTENU PRINCIPAL --- */
+main {
+    flex: 1;                            /* prend l’espace restant */
+    padding: 1em;                       /* espacement intérieur */
+    background-color: black;            /* fond du main */
+    color: wheat;                       /* couleur du texte */
+    margin-left: 200px;                 /* décale main pour laisser place à la nav */
+}
+
+/* --- HEADER MORPION (texte au-dessus des cartes) --- */
+.morpion-header {
+    margin: 20px auto;                  /* centrage horizontal avec marges verticales */
+    max-width: 800px;                   /* largeur maximale */
+    padding-bottom: 10px;               /* espacement sous le texte */
+    border-bottom: 2px solid #444;      /* ligne de séparation */
+    text-align: center;                  /* centrer le texte */
+}
+
+.morpion-header h2 {
+    color: rgb(188, 188, 188);          /* couleur du titre */
+    font-size: 2em;                     /* taille du titre */
+    margin-bottom: 10px;                /* espace sous le titre */
+}
+
+.morpion-header p {
+    color: #d6c7a1;                     /* couleur du texte descriptif */
+    font-size: 1.1em;                   /* taille du texte */
+    line-height: 1.6em;                 /* interligne */
+}
+
+/* --- CONTENEUR DES CARTES --- */
+.cards-container {
+    display: flex;                       /* cartes en ligne */
+    flex-wrap: wrap;                     /* passage à la ligne si trop de cartes */
+    justify-content: center;             /* centrer les cartes horizontalement */
+    gap: 20px;                           /* espace entre les cartes */
+    max-width: 900px;                    /* largeur maximale du conteneur */
+    margin: 20px auto;                   /* centrage horizontal et marge verticale */
+}
+
+/* --- CARTES --- */
+.card {
+    background-color: transparent;       /* fond transparent */
+    width: 150px;                        /* largeur fixe */
+    height: 200px;                       /* hauteur fixe */
+    border: 1px solid #006269;           /* bordure de la carte */
+    perspective: 1000px;                 /* profondeur pour l’effet 3D */
+}
+
+.card_inner {
+    position: relative;                  /* position relative pour rotation 3D */
+    width: 100%; 
+    height: 100%;
+    transition: transform 0.5s;          /* animation de rotation */
+    transform-style: preserve-3d;       /* nécessaire pour 3D */
+}
+
+/* --- EFFET AU SURVOL --- */
+.card:hover .card_inner {
+    transform: rotateY(180deg);          /* retourne la carte horizontalement */
+}
+
+/* --- FACE AVANT ET FACE ARRIÈRE --- */
+.card_front,
+.card_back {
+    position: absolute;                  /* superposé */
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;         /* cache l’arrière quand on retourne */
+    border-radius: 5px;                  /* coins arrondis */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.card_front {
+    background-color: #bbb;              /* couleur face avant */
+    color: black;                        /* couleur texte face avant */
+}
+
+.card_back {
+    background-color: #b5860f;           /* couleur face arrière */
+    color: white;                         /* couleur texte face arrière */
+    transform: rotateY(180deg);           /* rotation initiale pour l’arrière */
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 800px) {
+    .card {
+        width: 130px;
+        height: 180px;
+    }
+}
+
+@media (max-width: 600px) {
+    nav {
+        position: relative; /* nav empilée sur mobile */
+        width: 100%;
+        height: auto;
+    }
+    main {
+        margin-left: 0;     /* main prend toute la largeur */
+    }
+    .card {
+        width: 45%;         /* deux cartes par ligne sur petit écran */
+        height: 180px;
+    }
 }

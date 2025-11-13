@@ -7,3 +7,10 @@
 url = ""
 controleur = "controleurs/test.py"
 template = "templates/base.html"
+
+[[routes]]
+url = "page_morpion"
+controleur = "controleurs/page_morpion.py"
+template = "templates/page_morpion.html"
+
+

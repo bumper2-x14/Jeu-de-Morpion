@@ -59,13 +59,13 @@ CREATE TABLE journal (
 
 
 INSERT INTO morpion (name, image, hp, attack, mana, skill) VALUES
-('Flamix', 'static/img/t1.png', 120, 30, 50, 70),
-('Aquarion', 'static/img/t2.png', 140, 25, 80, 65),
-('Terranox', 'static/img/t3.png', 200, 20, 40, 50),
-('Voltorn', 'static/img/t4.png', 110, 40, 60, 75),
-('Frostine', 'static/img/t5.png', 130, 28, 90, 80),
-('Shadowen', 'static/img/t6.png', 100, 45, 70, 90),
-('Lumina', 'static/img/t7.png', 150, 22, 100, 85),
-('Venorax', 'static/img/t8.png', 160, 35, 55, 60),
-('Pyrax', 'static/img/t9.png', 125, 38, 45, 72),
-('Mystleaf', 'static/img/t10.png', 170, 24, 75, 68);
+('Flamix', 't1.png', 120, 30, 50, 70),
+('Aquarion', 't2.png', 140, 25, 80, 65),
+('Terranox', 't3.png', 200, 20, 40, 50),
+('Voltorn', 't4.png', 110, 40, 60, 75),
+('Frostine', 't5.png', 130, 28, 90, 80),
+('Shadowen', 't6.png', 100, 45, 70, 90),
+('Lumina', 't7.png', 150, 22, 100, 85),
+('Venorax', 't8.png', 160, 35, 55, 60),
+('Pyrax', 't9.png', 125, 38, 45, 72),
+('Mystleaf', 't10.png', 170, 24, 75, 68);
