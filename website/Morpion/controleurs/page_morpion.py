@@ -1,7 +1,6 @@
-from model.model import get_morpion
+from model.model import get_instances
 
 
-morpions = get_morpion(SESSION['CONNEXION'])
-print("DEBUG: morpions =", morpions) 
+morpions = get_instances(SESSION['CONNEXION'], "morpion")
 if morpions:
     REQUEST_VARS['morpions'] = morpions
