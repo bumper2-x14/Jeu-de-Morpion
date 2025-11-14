@@ -5,8 +5,8 @@
 
 [[routes]]
 url = ""
-controleur = "controleurs/test.py"
-template = "templates/base.html"
+controleur = "controleurs/acceuil.py"
+template = "templates/acceuil.html"
 
 [[routes]]
 url = "page_morpion"

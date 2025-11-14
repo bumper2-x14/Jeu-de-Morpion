@@ -24,6 +24,7 @@ def select_query(connexion, query, param=[]):
             return res
         except psycopg.Error as err:
             logger.error("Erreur de base de données : %s", err)
+    
     return None
 
 
