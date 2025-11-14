@@ -12,7 +12,7 @@ CREATE TABLE morpion (
     skill INT NOT NULL
 );
 
-CREATE TABLE equipe (
+CREATE TABLE equipe (   
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     color VARCHAR(7) NOT NULL,
@@ -69,3 +69,8 @@ INSERT INTO morpion (name, image, hp, attack, mana, skill) VALUES
 ('Venorax', 't8.png', 160, 35, 55, 60),
 ('Pyrax', 't9.png', 125, 38, 45, 72),
 ('Mystleaf', 't10.png', 170, 24, 75, 68);
+
+
+INSERT INTO equipe (name, color, creation_date) VALUES ('Red Dragons', '#FF0000', CURRENT_DATE);
+
+INSERT INTO equipe_morpion (equipe_id, morpion_id) VALUES (1,1), (1,2), (1,3), (1,4), (1,5), (1,6);

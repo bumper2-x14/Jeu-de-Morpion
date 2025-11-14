@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block main_block %}
+<div class="equipe_list">
+    <ol>
+        {% for inst in REQUEST_VARS['equipes'] %}
+        <li>
+            <strong>
+                <a href="/equipe_detail?id={{ inst[0] }}">{{ inst[1] }}</a>
+            </strong>
+            <div class="flag" style="--flag-color: {{ inst[2] }};"></div>
+            <i>{{ inst[3] }}</i>
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+{% endblock %}

@@ -14,3 +14,12 @@ controleur = "controleurs/page_morpion.py"
 template = "templates/page_morpion.html"
 
 
+[[routes]]
+url = "equipe"
+controleur = "controleurs/equipe.py"
+template = "templates/equipe.html"
+
+[[routes]]
+url = "equipe_detail"
+controleur = "controleurs/equipe_detail.py"
+template = "templates/equipe_detail.html"

@@ -1,10 +1,6 @@
 /* --- STYLES GLOBAUX --- */
-body {
-    background-color: #0d0d0d;
-    color: #f5deb3;
-    font-family: "Segoe UI", Arial, sans-serif;
-    margin: 0;
-}
+html, body { height: 100%; margin: 0; padding: 0; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
 
 /* --- HEADER --- */
 header {
@@ -15,12 +11,27 @@ header {
     font-weight: bold;
     letter-spacing: 1px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 100px;
+    border-top: 1px solid #444;
+}
+
+footer {
+    text-align: center;
+    padding: 1em;
+    background: #1a1a1a;
+    color: #b89e67;
+    font-size: 0.9em;
+    border-top: 1px solid #444;
+    margin-top: auto;
 }
 
 /* --- CONTENEUR PRINCIPAL (NAV + MAIN) --- */
 .layout, #center_id {
     display: flex;                     /* affiche nav et main côte à côte */
-    min-height: 100vh;                 /* occupe toute la hauteur de la fenêtre */
+    flex: 1;
 }
 
 /* --- NAVIGATION SIDEBAR --- */
@@ -32,13 +43,16 @@ nav {
     color: #f5deb3;
     padding: 1em;
     box-shadow: 3px 0 10px rgba(0,0,0,0.4);
-    position: fixed;
-    top: 150px;
-    border-radius: 10px;
+    position: sticky;
+    top: 100px;
+    z-index: 5;
+    border-top: 1px solid #444;
 }
 
 
 nav ul {
+    position: sticky;
+    top: 150px;
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -62,11 +76,10 @@ nav li a:hover {
 
 /* --- CONTENU PRINCIPAL --- */
 main {
-    flex: 1;                            /* prend l’espace restant */
-    padding: 1em;                       /* espacement intérieur */
+    flex: 1;                              /* prend l’espace restant */
+    padding: 1em 1em 0 1em;               /* espacement intérieur */
     background-color: black;            /* fond du main */
     color: wheat;                       /* couleur du texte */
-    margin-left: 200px;                 /* décale main pour laisser place à la nav */
 }
 
 /* --- HEADER MORPION (texte au-dessus des cartes) --- */
@@ -207,4 +220,15 @@ main {
         width: 45%;         /* deux cartes par ligne sur petit écran */
         height: 180px;
     }
+}
+
+
+.flag {
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0 0.4rem;
+    border-radius: 50%;           
+    background: var(--flag-color);            
+    vertical-align: middle;
 }

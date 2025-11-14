@@ -94,6 +94,32 @@ def delete_query(connexion, query, param=[]):
 # - connexion : objet de connexion à la base
 # - nom_table : nom de la table dont on veut les données
 # Retourne : le résultat du SELECT (liste de tuples) ou None.
-def get_instances(connexion, nom_table):
-    query = sql.SQL('SELECT * FROM {tab}').format(tab=sql.Identifier(nom_table))
+def get_instances(connexion, table_name):
+    query = sql.SQL('SELECT * FROM {tab}').format(tab=sql.Identifier(table_name))
     return select_query(connexion, query)
+
+
+def get_instances_by_id(connexion, table_name, id):
+    query = sql.SQL("SELECT * FROM {table} WHERE id = %s").format(
+        table=sql.Identifier(table_name)
+    )
+    return select_query(connexion, query, [id])
+
+
+def get_column(connexion, table_name, att_name):
+    query = sql.SQL('SELECT {att} FROM {tab}').format(att=sql.Identifier(att_name), tab=sql.Identifier(table_name))
+    return select_query(connexion, query)
+    
+
+def get_equipe_details(connexion, eq_id):
+    query = """
+        SELECT m.name, m.image, m.hp, m.attack, m.mana, m.skill
+        FROM equipe e
+        JOIN equipe_morpion em ON e.id = em.equipe_id
+        JOIN morpion m ON em.morpion_id = m.id
+        WHERE e.id = %s
+        """
+    
+    return select_query(connexion, query, [eq_id])
+    
+    
