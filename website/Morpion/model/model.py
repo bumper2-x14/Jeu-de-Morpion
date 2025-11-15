@@ -119,7 +119,6 @@ def get_equipe_details(connexion, eq_id):
         JOIN morpion m ON em.morpion_id = m.id
         WHERE e.id = %s
         """
-    
     return select_query(connexion, query, [eq_id])
     
     

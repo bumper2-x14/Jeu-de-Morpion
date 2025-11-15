@@ -1,4 +1,36 @@
 {% extends "base.html" %}
 {% block main_block %}
-    
+
+<h1>{{ REQUEST_VARS['sel_equipe'][0][1] }}</h1>
+<br><br>
+
+{% if REQUEST_VARS['eq_morps'] %}
+<div class="cards-container">
+    {% for inst in REQUEST_VARS['eq_morps'] %}
+        <div class="card">
+            <div class="card_inner">
+                <div class="card_front">
+                    <div class="card_image">
+                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[1] }}" alt="{{ inst[0] }}" width="100" height="100">
+                    </div>
+                    <div class="card_name">
+                        <p>{{ inst[0] }}</p>
+                    </div>
+                </div>
+                <div class="card_back">
+                    <p>
+                        <strong>HP:</strong> {{ inst[2] }}<br>
+                        <strong>Attack:</strong> {{ inst[3] }}<br>
+                        <strong>Mana:</strong> {{ inst[4] }}<br>
+                        <strong>Skill:</strong> {{ inst[5] }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+    <p>Aucun Morpion trouvé.</p>
+{% endif %}
+
 {% endblock %}
