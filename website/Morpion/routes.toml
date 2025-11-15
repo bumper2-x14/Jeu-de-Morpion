@@ -5,8 +5,8 @@
 
 [[routes]]
 url = ""
-controleur = "controleurs/test.py"
-template = "templates/base.html"
+controleur = "controleurs/accueil.py"
+template = "templates/accueil.html"
 
 [[routes]]
 url = "page_morpion"
@@ -23,3 +23,14 @@ template = "templates/equipe.html"
 url = "equipe_detail"
 controleur = "controleurs/equipe_detail.py"
 template = "templates/equipe_detail.html"
+
+[[routes]]
+url = "jeu_classique"
+controleur = "controleurs/jeu_classique.py"
+template = "templates/jeu_classique.html"
+
+
+[[routes]]
+url = "config_classique"
+controleur = "controleurs/config_classique.py"
+template = "templates/config_classique.html"

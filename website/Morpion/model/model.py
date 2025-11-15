@@ -24,6 +24,7 @@ def select_query(connexion, query, param=[]):
             return res
         except psycopg.Error as err:
             logger.error("Erreur de base de données : %s", err)
+    
     return None
 
 
@@ -121,4 +122,12 @@ def get_equipe_details(connexion, eq_id):
         """
     return select_query(connexion, query, [eq_id])
     
+    
+def insert_to_config(connexion, grid_size, max_turn):
+    query = sql.SQL("""
+            INSERT INTO configuration (grid_size, max_turn)
+            VALUES ({size}, {turn})
+            """).format(size=sql.Identifier(grid_size), turn=sql.Identifier(max_turn))
+    
+    return insert_query(connexion, query)
     
