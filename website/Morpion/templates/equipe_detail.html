@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block main_block %}
 
-<h1>{{ REQUEST_VARS['sel_equipe'][0][1] }}</h1>
+<div class="eq_name"> <h1>{{ REQUEST_VARS['sel_equipe'][0][1] }}</h1> </div>
 <br><br>
 
 {% if REQUEST_VARS['eq_morps'] %}
-<div class="cards-container">
+<div class="eq_deck">
     {% for inst in REQUEST_VARS['eq_morps'] %}
-        <div class="card">
+        <div class="card" style="--width-size: 120px; --height-size: 170px;">
             <div class="card_inner">
-                <div class="card_front">
+                <div class="card_front" style="--card-front-color: {{ REQUEST_VARS['sel_equipe'][0][2] }}">
                     <div class="card_image">
                         <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[1] }}" alt="{{ inst[0] }}" width="100" height="100">
                     </div>

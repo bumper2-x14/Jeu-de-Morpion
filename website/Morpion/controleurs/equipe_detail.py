@@ -6,3 +6,4 @@ eq_morpions = get_equipe_details(SESSION['CONNEXION'], eq_id)
 
 REQUEST_VARS['sel_equipe'] = selected_equipe
 REQUEST_VARS['eq_morps'] = eq_morpions
+print( REQUEST_VARS['sel_equipe'][0][2])

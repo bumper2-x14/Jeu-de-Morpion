@@ -12,7 +12,7 @@ CREATE TABLE morpion (
     skill INT NOT NULL
 );
 
-CREATE TABLE equipe (   
+CREATE TABLE equipe (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     color VARCHAR(7) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE equipe_morpion (
 
 CREATE TABLE configuration (
     id SERIAL PRIMARY KEY,
-    grid_size INT NOT NULL, -- 3 or 4
+    grid_size INT NOT NULL, -- 3 ou 4
     max_turns INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -57,20 +57,35 @@ CREATE TABLE journal (
     FOREIGN KEY(partie_id) REFERENCES partie(id)
 );
 
-
 INSERT INTO morpion (name, image, hp, attack, mana, skill) VALUES
-('Flamix', 't1.png', 120, 30, 50, 70),
-('Aquarion', 't2.png', 140, 25, 80, 65),
-('Terranox', 't3.png', 200, 20, 40, 50),
-('Voltorn', 't4.png', 110, 40, 60, 75),
-('Frostine', 't5.png', 130, 28, 90, 80),
-('Shadowen', 't6.png', 100, 45, 70, 90),
-('Lumina', 't7.png', 150, 22, 100, 85),
-('Venorax', 't8.png', 160, 35, 55, 60),
-('Pyrax', 't9.png', 125, 38, 45, 72),
-('Mystleaf', 't10.png', 170, 24, 75, 68);
+('Flamix', 't1.png', 4, 4, 3, 4),
+('Aquarion', 't2.png', 3, 4, 4, 4),
+('Terranox', 't3.png', 5, 3, 3, 4),
+('Voltorn', 't4.png', 3, 5, 3, 4),
+('Frostine', 't5.png', 4, 3, 4, 4),
+('Shadowen', 't6.png', 3, 5, 4, 3),
+('Lumina', 't7.png', 4, 3, 5, 3),
+('Venorax', 't8.png', 4, 4, 3, 4),
+('Pyrax', 't9.png', 3, 4, 4, 4),
+('Mystleaf', 't10.png', 4, 3, 4, 4),
+('Blazefang', 't11.png', 4, 4, 3, 4),
+('Aqualis', 't12.png', 3, 5, 4, 3),
+('Terrafin', 't13.png', 3, 4, 4, 4),
+('Voltis', 't14.png', 5, 3, 4, 3),
+('Frostwing', 't15.png', 4, 3, 4, 4),
+('Shadowclaw', 't16.png', 3, 5, 3, 4);
+
+INSERT INTO equipe (name, color, creation_date) VALUES
+('Red Dragons', '#FF0000', CURRENT_DATE),
+('Blue Phoenix', '#0000FF', CURRENT_DATE),
+('Green Titans', '#00FF00', CURRENT_DATE);
 
 
-INSERT INTO equipe (name, color, creation_date) VALUES ('Red Dragons', '#FF0000', CURRENT_DATE);
+INSERT INTO equipe_morpion (equipe_id, morpion_id) VALUES
+(1,1), (1,2), (1,3), (1,4), (1,5), (1,6);
 
-INSERT INTO equipe_morpion (equipe_id, morpion_id) VALUES (1,1), (1,2), (1,3), (1,4), (1,5), (1,6);
+INSERT INTO equipe_morpion (equipe_id, morpion_id) VALUES
+(2,7), (2,8), (2,9), (2,10), (2,11), (2,12);
+
+INSERT INTO equipe_morpion (equipe_id, morpion_id) VALUES
+(3,1), (3,2), (3,3), (3,4), (3,5), (3,6), (3,13), (3,14);
