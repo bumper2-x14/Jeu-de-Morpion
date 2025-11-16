@@ -103,21 +103,13 @@ main {
     line-height: 1.6em;                 /* interligne */
 }
 
-/* --- CONTENEUR DES CARTES --- */
-.cards-container {
-    display: flex;                       /* cartes en ligne */
-    flex-wrap: wrap;                     /* passage à la ligne si trop de cartes */
-    justify-content: center;             /* centrer les cartes horizontalement */
-    gap: 20px;                           /* espace entre les cartes */
-    max-width: 900px;                    /* largeur maximale du conteneur */
-    margin: 20px auto;                   /* centrage horizontal et marge verticale */
-}
+
 
 /* --- CARTES --- */
 .card {
     background-color: transparent;
-    width: 150px;
-    height: 200px;                 /* un peu plus haute pour le nom */
+    width: var(--width-size, 150px);
+    height: var(--height-size, 200px);                 /* un peu plus haute pour le nom */
     border: 1px solid black;
     perspective: 1000px;
     overflow: hidden;              /* empêche le débordement du contenu */
@@ -144,6 +136,7 @@ main {
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
+    border: 3px solid silver;
     border-radius: 5px;
     display: flex;
     flex-direction: column;        /* pour empiler image + nom verticalement */
@@ -156,8 +149,8 @@ main {
 
 /* --- FACE AVANT --- */
 .card_front {
-    background: linear-gradient(180deg, #d8c292, #b89e67);
-    color: #1a1a1a;
+    background: linear-gradient(180deg, var(--card-front-color, #d8c292), #000000);
+    color: white;
 }
 
 /* Image bien contenue */
@@ -189,7 +182,7 @@ main {
 
 /* --- FACE ARRIÈRE --- */
 .card_back {
-    background: linear-gradient(180deg, #d1a023, #b0700c);
+    background: linear-gradient(180deg, silver, black);
     color: #fff8e1;
     transform: rotateY(180deg);
     justify-content: center;
@@ -231,4 +224,30 @@ main {
     border-radius: 50%;           
     background: var(--flag-color);            
     vertical-align: middle;
+}
+
+
+/* --- CONTENEUR DES CARTES --- */
+.cards-container {
+    display: flex;                       /* cartes en ligne */
+    flex-wrap: wrap;                     /* passage à la ligne si trop de cartes */
+    justify-content: center;             /* centrer les cartes horizontalement */
+    gap: 20px;                           /* espace entre les cartes */
+    max-width: 1100px;                    /* largeur maximale du conteneur */
+    margin: 20px auto;                   /* centrage horizontal et marge verticale */
+}
+
+.eq_deck {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 400px;
+    margin: 0 0 20px auto; 
+}
+
+.eq_name {
+    display: flex;
+    align-items: center; 
+    margin: 0 0 20px 20px;
 }
