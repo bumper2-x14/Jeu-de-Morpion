@@ -124,11 +124,13 @@ def get_equipe_details(connexion, eq_id):
     return select_query(connexion, query, [eq_id])
     
     
-def insert_to_config(connexion, grid_size, max_turn):
-    query = sql.SQL("""
-            INSERT INTO configuration (grid_size, max_turn)
-            VALUES ({size}, {turn})
-            """).format(size=sql.Identifier(grid_size), turn=sql.Identifier(max_turn))
+def insert_to_config(connexion, grid_size, max_turns):
+    cursor = connexion.cursor()
+    query = """
+            INSERT INTO configuration (grid_size, max_turns)
+            VALUES (%s, %s)
+            """
     
-    return insert_query(connexion, query)
+    cursor.execute(query, [grid_size, max_turns])
+    connexion.commit()
     

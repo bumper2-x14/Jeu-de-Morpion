@@ -1,13 +1,22 @@
 {% extends "base.html" %}
 
 {% block main_block %}
-<form method="post">
-    <h3>choisissez la taille :</h3>
-    <input type="radio" name="size" value="3" required>
+<form method="POST">
+    <h4>choisissez la taille :</h4>
+    <input type="radio" name="size" id="size" value="3" required>
     3x3
-    <input type="radio" name="size" value="4" required>
+    <input type="radio" name="size" id="size" value="4" required>
     4x4
+    <br>
+    <h4>choisissez le nombre de tour maximum</h4>
+    <input type="number" name="max_turn" id="max_turn" min="1" value="" required>
+    <br>
+    <input type="submit" name="bouton_jouer" value="jouer">
 
 </form>
+
+{% if REQUEST_VARS['link'] %}
+    <a href="{{ REQUEST_VARS['link'] }}" class="btn">Commencer la partie</a>
+{% endif %}
 
 {% endblock %}
