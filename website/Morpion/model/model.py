@@ -132,4 +132,24 @@ def insert_to_config(connexion, grid_size, max_turns):
     
     cursor.execute(query, [grid_size, max_turns])
     connexion.commit()
+
+
+def get_last_config(connexion):
+    with connexion.cursor() as cursor:
+        cursor.execute("""
+            SELECT id, grid_size, max_turns
+            FROM configuration
+            ORDER BY id DESC
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+
+    if row is None:
+        return None
+    
+    return {
+        "id": row[0],
+        "grid_size": row[1],
+        "max_turns": row[2],
+    }    
     

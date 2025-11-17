@@ -1,22 +1,62 @@
 {% extends "base.html" %}
 
 {% block main_block %}
-<form method="POST">
-    <h4>choisissez la taille :</h4>
-    <input type="radio" name="size" id="size" value="3" required>
-    3x3
-    <input type="radio" name="size" id="size" value="4" required>
-    4x4
-    <br>
-    <h4>choisissez le nombre de tour maximum</h4>
-    <input type="number" name="max_turn" id="max_turn" min="1" value="" required>
-    <br>
-    <input type="submit" name="bouton_jouer" value="jouer">
 
+<form method="POST">
+    <div class="config_main">
+
+        <fieldset>
+            <legend>Configuration:</legend>
+
+            <h4>Choisissez la taille :</h4>
+
+            <div class="config_input">
+
+                <label>
+                    <input type="radio" name="size" value="3"
+                    {% if REQUEST_VARS['size'] == "3" %}checked{% endif %}> 3x3
+                </label>
+
+                <label>
+                    <input type="radio" name="size" value="4"
+                    {% if REQUEST_VARS['size'] == "4" %}checked{% endif %}> 4x4
+                </label>
+
+                <br><br>
+
+                <h4>Choisissez le nombre de tours maximum :</h4>
+
+                <input type="number"
+                       name="max_turn"
+                       id="max_turn"
+                       min="1"
+                       required
+                       value="{{ REQUEST_VARS['max_turn'] if REQUEST_VARS['max_turn'] else '' }}">
+            </div>
+
+            <br>
+
+            <input type="submit" name="bouton_sauvgarder" value="sauvgarder">
+
+        </fieldset>
+
+        <div class="jouer">
+            <input type="submit" name="bouton_jouer" value="jouer">
+        </div>
+
+    </div>
 </form>
 
-{% if REQUEST_VARS['link'] %}
-    <a href="{{ REQUEST_VARS['link'] }}" class="btn">Commencer la partie</a>
+{% if REQUEST_VARS['go_play'] %}
+    <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['go_play'] }}">
+{% endif %}
+
+{% if REQUEST_VARS['message'] %}
+    <p style="color: lightgreen;">{{ REQUEST_VARS['message'] }}</p>
+{% endif %}
+
+{% if REQUEST_VARS['error'] %}
+    <p style="color: red;">{{ REQUEST_VARS['error'] }}</p>
 {% endif %}
 
 {% endblock %}
