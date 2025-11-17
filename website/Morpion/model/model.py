@@ -121,11 +121,13 @@ def get_equipe_details(connexion, eq_id):
         WHERE e.id = %s
         """
     return select_query(connexion, query, [eq_id])
+
+#def create_equipe(connexion, )
     
     
 def insert_to_config(connexion, grid_size, max_turn):
     query = sql.SQL("""
-            INSERT INTO configuration (grid_size, max_turn)
+            INSERT INTO configuration (grid_size, max_turns)
             VALUES ({size}, {turn})
             """).format(size=sql.Identifier(grid_size), turn=sql.Identifier(max_turn))
     

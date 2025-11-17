@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block main_block %}
+
+<div class="create_eq">
+    <a href="creer_equipe">Creer une nouvelle equipe</a>
+</div>
+
 <div class="equipe_list">
     <ol>
         {% for inst in REQUEST_VARS['equipes'] %}

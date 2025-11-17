@@ -251,3 +251,115 @@ main {
     align-items: center; 
     margin: 0 0 20px 20px;
 }
+
+.card_list{
+    display: flex;                       /* cartes en ligne */
+    flex-wrap: wrap;                     /* passage à la ligne si trop de cartes */
+    justify-content: center;             /* centrer les cartes horizontalement */
+    gap: 20px;                           /* espace entre les cartes */
+    max-width: 1000px;                    /* largeur maximale du conteneur */
+    margin: 20px auto;                   /* centrage horizontal et marge verticale */
+}
+
+.card_selectable {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+}
+
+.card_selectable input[type="checkbox"] {
+    display: none; /* hide the checkbox */
+}
+
+/* When the checkbox is checked, highlight the card */
+.card_selectable input[type="checkbox"]:checked + .card {
+    outline: 3px solid gold;
+    box-shadow: 0 0 10px gold;
+}
+
+.selected_card_list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+.card_list + br + button,
+.card_list button[type="submit"] {
+    display: block;
+    margin: 25px auto 0;
+    padding: 12px 32px;
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    color: #1a1a1a;
+    font-weight: bold;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.eq_creation_main {
+    display: flex;
+    margin: 10px;
+    gap: 10px;
+    padding: 5px;
+    align-items: flex-start;
+}
+
+.param_set {
+    flex: 2; 
+}
+
+.eq_final {
+    flex: 1;
+}
+
+.eq_creation_main fieldset {
+    width: 95%;
+    margin: 10px 0;
+    padding: 20px;
+    border: 1px solid #555;
+    border-radius: 12px;
+    background: rgba(30,30,40,0.6);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.eq_creation_main legend {
+    color: #f5deb3;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 0 10px;
+}
+
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    color: #d6c7a1;
+}
+
+input[name="eq_name"] {
+    flex: 1;
+    padding: 8px;
+    background: #222;
+    color: wheat;
+    border: 1px solid #b89e67;
+    border-radius: 6px;
+}
+
+input[type="radio"] {
+    accent-color: #d1a023;
+}
+
+input[type="color"] {
+    width: 40px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+}
