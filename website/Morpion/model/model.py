@@ -147,15 +147,39 @@ def create_equipe(connexion, eq_name, eq_color, eq_morpions, nb_morpions):
         params.extend([eq_id, m])
 
     
-    return insert_query(connexion, insert_morpions_query, params)
-
-
-    
 def insert_to_config(connexion, grid_size, max_turn):
     query = sql.SQL("""
             INSERT INTO configuration (grid_size, max_turns)
-            VALUES ({size}, {turn})
-            """).format(size=sql.Identifier(grid_size), turn=sql.Identifier(max_turn))
+            VALUES (%s, %s)
+            """)
     
-    return insert_query(connexion, query)
+    return insert_query(connexion, query, [grid_size, max_turn])
+
+
+def get_last_config(connexion):
+    with connexion.cursor() as cursor:
+        cursor.execute("""
+            SELECT id, grid_size, max_turns
+            FROM configuration
+            ORDER BY id DESC
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+
+    if row is None:
+        return None
     
+    return {
+        "id": row[0],
+        "grid_size": row[1],
+        "max_turns": row[2],
+    }    
+
+def get_nb_instances(connexion , table_name):
+    
+    query = """
+        SELECT count(id)
+        from %s 
+        """
+    
+    return select_query(connexion, query, [table_name])

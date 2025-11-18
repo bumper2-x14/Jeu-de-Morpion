@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block main_block %}
+
+    {% if not REQUEST_VARS['has_config'] %}
+        <h2>Configuration manquante</h2>
+        <p>Vous devez d'abord configurer la partie avant de jouer.</p>
+        <a href="/config_classique" class="btn">Aller à la configuration</a>
+
+    {% else %}
+        <h2>Jeu classique</h2>
+        <p>
+            Taille de la grille : {{ REQUEST_VARS['grid_size'] }}x{{ REQUEST_VARS['grid_size'] }} <br>
+            Nombre de tours maximum : {{ REQUEST_VARS['max_turns'] }}
+        </p>
+
+        <!-- grille du morpion -->
+        <table class="morpion-grid">
+            {% for i in range(REQUEST_VARS['grid_size']) %}
+                <tr>
+                    {% for j in range(REQUEST_VARS['grid_size']) %}
+                     <div class = "cell-morpion" >
+                        <td>
+                            <input 
+                                type = "checkbox"
+                                valeur="1">
+                        </td>
+                    </div>    
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <p> apre on creera </p>
+    {% endif %}
+
+{% endblock %}
