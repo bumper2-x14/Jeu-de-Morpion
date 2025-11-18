@@ -34,3 +34,8 @@ template = "templates/jeu_classique.html"
 url = "config_classique"
 controleur = "controleurs/config_classique.py"
 template = "templates/config_classique.html"
+
+[[routes]]
+url = "creer_equipe"
+controleur = "controleurs/creer_equipe.py"
+template = "templates/creer_equipe.html"

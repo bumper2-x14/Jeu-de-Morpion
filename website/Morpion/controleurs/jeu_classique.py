@@ -7,4 +7,6 @@ if config is None:
 else:
     REQUEST_VARS['has_config'] = True
     REQUEST_VARS['grid_size'] = config['grid_size']    
-    REQUEST_VARS['max_turns'] = config['max_turns']    
+    REQUEST_VARS['max_turns'] = config['max_turns']
+    
+        

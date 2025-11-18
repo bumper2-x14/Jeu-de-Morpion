@@ -19,7 +19,13 @@
             {% for i in range(REQUEST_VARS['grid_size']) %}
                 <tr>
                     {% for j in range(REQUEST_VARS['grid_size']) %}
-                        <td class="morpion-cell"></td>
+                     <div class = "cell-morpion" >
+                        <td>
+                            <input 
+                                type = "checkbox"
+                                valeur="1">
+                        </td>
+                    </div>    
                     {% endfor %}
                 </tr>
             {% endfor %}

@@ -121,17 +121,16 @@ def get_equipe_details(connexion, eq_id):
         WHERE e.id = %s
         """
     return select_query(connexion, query, [eq_id])
+
+#def create_equipe(connexion, )
     
-    
-def insert_to_config(connexion, grid_size, max_turns):
-    cursor = connexion.cursor()
-    query = """
+def insert_to_config(connexion, grid_size, max_turn):
+    query = sql.SQL("""
             INSERT INTO configuration (grid_size, max_turns)
             VALUES (%s, %s)
-            """
+            """)
     
-    cursor.execute(query, [grid_size, max_turns])
-    connexion.commit()
+    return insert_query(connexion, query, [grid_size, max_turn])
 
 
 def get_last_config(connexion):
@@ -152,4 +151,12 @@ def get_last_config(connexion):
         "grid_size": row[1],
         "max_turns": row[2],
     }    
+
+def get_nb_instances(connexion , table_name):
     
+    query = """
+        SELECT count(id)
+        from %s 
+        """
+    
+    return select_query(connexion, query, [table_name])

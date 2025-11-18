@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block main_block %}
+
+<div class="eq_creation_main">
+
+    <!-- LEFT : Paramètres d'équipe -->
+    <div class="param_set">
+        <form method="POST">
+            <fieldset>
+                <legend>Paramètre d'équipe</legend>
+
+                <label for="eq_name">
+                    Nom d'équipe :
+                    <input type="text" name="eq_name" id="eq_name">
+                </label>
+                <br>
+
+                <label>
+                    Nombre de Morpions :
+                    <input type="radio" name="eq_size" value="6" id="size6">
+                    <label for="size6">6 Morpoins</label>
+
+                    <input type="radio" name="eq_size" value="8" id="size8">
+                    <label for="size8">8 Morpoins</label>
+                </label>
+                <br>
+
+                <label for="eq_col">
+                    Couleur d'équipe :
+                    <input type="color" name="eq_col" id="eq_col">
+                </label>
+                <br><br>
+
+                {% if REQUEST_VARS['morpions'] %}
+                <div class="card_list">
+                    {% for inst in REQUEST_VARS['morpions'] %}
+                    <label class="card_selectable">
+                        <input type="checkbox" name="selected_ids" value="{{ inst[0] }}">
+                        <div class="card" style="--width-size: 100px; --height-size: 150px;">
+                            <div class="card_inner">
+                                <div class="card_front">
+                                    <div class="card_image">
+                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                                    </div>
+                                    <div class="card_name">
+                                        <p>{{ inst[1] }}</p>
+                                    </div>
+                                </div>
+                                <div class="card_back">
+                                    <p>
+                                        <strong>PV:</strong> {{ inst[3] }}<br>
+                                        <strong>ATT:</strong> {{ inst[4] }}<br>
+                                        <strong>MANA:</strong> {{ inst[5] }}<br>
+                                        <strong>REU:</strong> {{ inst[6] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <br>
+                <button type="submit">Valider la sélection</button>
+
+                {% else %}
+                <p>Aucun Morpion trouvé.</p>
+                {% endif %}
+            </fieldset>
+    </div>
+
+    <!-- RIGHT : Équipe finale -->
+    <div class="eq_final">
+        <fieldset>
+            <legend>Morpions choisis</legend>
+
+            {% if REQUEST_VARS['equipe_size'] > 0 and REQUEST_VARS['selected_morpions'] %}
+            <p>Équipe finale ({{ REQUEST_VARS['selected_morpions']|length }} / {{ REQUEST_VARS['equipe_size'] }})</p>
+
+            <div class="selected_card_list">
+                {% for inst in REQUEST_VARS['selected_morpions'] %}
+                <div class="card" style="--width-size: 100px; --height-size: 150px;">
+                    <div class="card_inner">
+                        <div class="card_front" style="--card-front-color: {{ POST['eq_col'][0] }}">
+                            <div class="card_image">
+                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                            </div>
+                            <div class="card_name">
+                                <p>{{ inst[1] }}</p>
+                            </div>
+                        </div>
+
+                        <div class="card_back">
+                            <p>
+                                <strong>PV:</strong> {{ inst[3] }}<br>
+                                <strong>ATT:</strong> {{ inst[4] }}<br>
+                                <strong>MANA:</strong> {{ inst[5] }}<br>
+                                <strong>REU:</strong> {{ inst[6] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <p>Choisissez les paramètres d'équipe pour pouvoir sélectionner vos Morpions.</p>
+            {% endif %}
+        </fieldset>
+    </div>
+
+    </form>
+</div>
+
+{% endblock %}

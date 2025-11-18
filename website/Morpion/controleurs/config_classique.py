@@ -1,7 +1,7 @@
 from model.model import insert_to_config, get_last_config
 
 # ======================================================
-# S A U V G A R D E R
+# SAUVGARDER
 # ======================================================
 
 if POST and 'bouton_sauvgarder' in POST:
@@ -11,7 +11,6 @@ if POST and 'bouton_sauvgarder' in POST:
 
     success = insert_to_config(SESSION['CONNEXION'], grid_size, max_turns)
 
-
     REQUEST_VARS['size'] = str(grid_size)
     REQUEST_VARS['max_turn'] = str(max_turns)
 
@@ -20,7 +19,7 @@ if POST and 'bouton_sauvgarder' in POST:
 
 
 # ======================================================
-# J O U E R
+# JOUER
 # ======================================================
 
 elif POST and 'bouton_jouer' in POST:
