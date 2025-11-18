@@ -1,5 +1,19 @@
-#page statique
 from model.model import get_nb_instances
 
-nb_moroion = get_nb_instances()
+nb_morpion = get_nb_instances(SESSION['CONNEXION'], "morpion")
 
+if (nb_morpion):
+    REQUEST_VARS['nb_morpion'] = nb_morpion
+
+
+nb_equipe = get_nb_instances(SESSION['CONNEXION'], "equipe")
+
+if (nb_equipe):
+    REQUEST_VARS['nb_equipe'] = nb_equipe
+
+
+
+nb_partie = get_nb_instances(SESSION['CONNEXION'], "partie")
+
+if (nb_partie):
+    REQUEST_VARS['nb_partie'] = nb_partie
