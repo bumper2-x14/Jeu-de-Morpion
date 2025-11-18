@@ -205,10 +205,6 @@ def get_last_config(connexion):
     }    
 
 def get_nb_instances(connexion , table_name):
+    query = sql.SQL("SELECT COUNT(id) FROM {tab}").format(tab=sql.Identifier(table_name)) 
     
-    query = """
-        SELECT count(id)
-        from %s 
-        """
-    
-    return select_query(connexion, query, [table_name])
+    return select_query(connexion, query)

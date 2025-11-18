@@ -13,5 +13,10 @@
     <li><a href="config_avance"><strong>Mode avancé </a></li>
 </ul>
  
-
+<p>
+    nombre d'instance de la table <br>
+    morpion:  {{ REQUEST_VARS['nb_morpion'][0][0] }}<br>
+    equipe:  {{ REQUEST_VARS['nb_equipe'][0][0] }}<br>
+    partie:  {{ REQUEST_VARS['nb_partie'][0][0] }}
+</p>
  {% endblock %}
