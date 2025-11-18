@@ -216,17 +216,6 @@ main {
 }
 
 
-.flag {
-    display: inline-block;
-    width: 1.2rem;
-    height: 1.2rem;
-    margin: 0 0.4rem;
-    border-radius: 50%;           
-    background: var(--flag-color);            
-    vertical-align: middle;
-}
-
-
 /* --- CONTENEUR DES CARTES --- */
 .cards-container {
     display: flex;                       /* cartes en ligne */
@@ -268,10 +257,9 @@ main {
 }
 
 .card_selectable input[type="checkbox"] {
-    display: none; /* hide the checkbox */
+    display: none; 
 }
 
-/* When the checkbox is checked, highlight the card */
 .card_selectable input[type="checkbox"]:checked + .card {
     outline: 3px solid gold;
     box-shadow: 0 0 10px gold;
@@ -362,4 +350,104 @@ input[type="color"] {
     height: 36px;
     border: none;
     border-radius: 6px;
+}
+
+.success_msg {
+    color: green;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+/* --- CREATE NEW TEAM LINK --- */
+.create_eq {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.create_eq a {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    color: #1a1a1a;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-decoration: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+}
+
+.create_eq a:hover {
+    background: linear-gradient(90deg, #d1a023, #b89e67);
+    transform: translateY(-2px);
+}
+
+/* --- TEAM LIST --- */
+.equipe_list {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.equipe_list ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.equipe_list li {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    background-color: #111;
+    color: wheat;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border-left: 5px solid #b89e67;
+    transition: all 0.3s ease;
+}
+
+.equipe_list li:hover {
+    background-color: #222;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(184,158,103,0.4);
+}
+
+.equipe_list li strong a {
+    color: #d1a023;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.equipe_list li strong a:hover {
+    text-decoration: underline;
+}
+
+.equipe_list i {
+    font-style: italic;
+    color: #d6c7a1;
+    font-size: 0.9em;
+}
+
+/* --- FLAG --- */
+.equipe_list .flag {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--flag-color);
+    margin-left: 15px;
+    flex-shrink: 0;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 500px) {
+    .equipe_list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .equipe_list .flag {
+        margin-left: 0;
+        margin-top: 8px;
+    }
 }

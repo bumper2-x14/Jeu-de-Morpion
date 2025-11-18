@@ -37,10 +37,10 @@ def select_query(connexion, query, param=[]):
 # - param     : liste des valeurs à insérer
 # Retourne True si l’insertion réussit, False sinon.
 def insert_query(connexion, query, param=[]):
-    with connexion.cursor() as cursor:  # ← CORRECTION : ajouter les parenthèses après cursor()
+    with connexion.cursor() as cursor:  
         try:
             cursor.execute(query, param)
-            connexion.commit()  # ← CORRECTION : commit() doit être appelé sur la connexion, pas le curseur
+            connexion.commit() 
             return True
         except psycopg.Error as err:
             connexion.rollback()
@@ -57,10 +57,10 @@ def insert_query(connexion, query, param=[]):
 # - param     : paramètres associés à la requête
 # Retourne True si la mise à jour réussit, False sinon.
 def update_query(connexion, query, param=[]):
-    with connexion.cursor() as cursor:  # ← ajouter ()
+    with connexion.cursor() as cursor: 
         try:
             cursor.execute(query, param)
-            connexion.commit()  # ← corriger ici aussi
+            connexion.commit()  
             return True
         except psycopg.Error as err:
             connexion.rollback()
@@ -77,10 +77,10 @@ def update_query(connexion, query, param=[]):
 # - param     : paramètres associés à la requête
 # Retourne True si la suppression réussit, False sinon.
 def delete_query(connexion, query, param=[]):
-    with connexion.cursor() as cursor:  # ← ajouter ()
+    with connexion.cursor() as cursor: 
         try:
             cursor.execute(query, param)
-            connexion.commit()  # ← corriger ici aussi
+            connexion.commit()  
             return True
         except psycopg.Error as err:
             connexion.rollback()
@@ -122,8 +122,34 @@ def get_equipe_details(connexion, eq_id):
         """
     return select_query(connexion, query, [eq_id])
 
-#def create_equipe(connexion, )
+
+def create_equipe(connexion, eq_name, eq_color, eq_morpions, nb_morpions):
+    insert_eq_query = """
+        INSERT INTO equipe (name, color)
+        VALUES (%s, %s)
+        RETURNING id;
+    """
+
+    with connexion.cursor() as cursor:
+        cursor.execute(insert_eq_query, [eq_name, eq_color])
+        eq_id = cursor.fetchone()[0]
+        connexion.commit()
+
+    values_placeholder = ", ".join(["(%s, %s)"] * nb_morpions)
+
+    insert_morpions_query = f"""
+        INSERT INTO equipe_morpion (equipe_id, morpion_id)
+        VALUES {values_placeholder};
+    """
+
+    params = []
+    for m in eq_morpions:
+        params.extend([eq_id, m])
+
     
+    return insert_query(connexion, insert_morpions_query, params)
+
+
     
 def insert_to_config(connexion, grid_size, max_turn):
     query = sql.SQL("""

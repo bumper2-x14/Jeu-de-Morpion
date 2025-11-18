@@ -16,7 +16,7 @@ CREATE TABLE equipe (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     color VARCHAR(7) NOT NULL,
-    creation_date DATE NOT NULL
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE equipe_morpion (

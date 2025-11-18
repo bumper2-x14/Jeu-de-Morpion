@@ -3,7 +3,7 @@
 
 <div class="eq_creation_main">
 
-    <!-- LEFT : Paramètres d'équipe -->
+    <!-- G : Paramètres d'équipe -->
     <div class="param_set">
         <form method="POST">
             <fieldset>
@@ -67,15 +67,19 @@
                 <p>Aucun Morpion trouvé.</p>
                 {% endif %}
             </fieldset>
+        </form>
     </div>
+    
 
-    <!-- RIGHT : Équipe finale -->
+    <!-- D : Équipe finale -->
     <div class="eq_final">
         <fieldset>
             <legend>Morpions choisis</legend>
 
             {% if REQUEST_VARS['equipe_size'] > 0 and REQUEST_VARS['selected_morpions'] %}
             <p>Équipe finale ({{ REQUEST_VARS['selected_morpions']|length }} / {{ REQUEST_VARS['equipe_size'] }})</p>
+
+            <h4> Nom d'équipe : {{ REQUEST_VARS['eq_name'] }}</h4>
 
             <div class="selected_card_list">
                 {% for inst in REQUEST_VARS['selected_morpions'] %}
@@ -102,14 +106,28 @@
                 </div>
                 {% endfor %}
             </div>
+            <form method="POST">
+                <br>
+                <button type="submit" name="finaliser" value="1">Finaliser</button>
+                <input type="hidden" name="eq_name" value="{{ REQUEST_VARS['eq_name'] }}">
+                <input type="hidden" name="eq_col" value="{{ REQUEST_VARS['eq_col'] }}">
+                <input type="hidden" name="eq_size" value="{{ REQUEST_VARS['equipe_size'] }}">
+
+                {% for m in REQUEST_VARS['selected_morpions'] %}
+                    <input type="hidden" name="selected_ids" value="{{ m[0] }}">
+                {% endfor %}
+            </form>
+
+            {% if REQUEST_VARS['msg'] %}
+                <p class="success_msg">{{ REQUEST_VARS['msg'] }}</p>
+            {% endif %}
 
             {% else %}
             <p>Choisissez les paramètres d'équipe pour pouvoir sélectionner vos Morpions.</p>
             {% endif %}
-        </fieldset>
+        </fieldset> 
     </div>
 
-    </form>
 </div>
 
 {% endblock %}
