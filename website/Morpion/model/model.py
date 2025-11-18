@@ -1,5 +1,6 @@
 import psycopg
 from psycopg import sql
+from psycopg.rows import dict_row
 from logzero import logger
 from datetime import datetime
 
@@ -110,6 +111,19 @@ def get_instances_by_id(connexion, table_name, id):
 def get_column(connexion, table_name, att_name):
     query = sql.SQL('SELECT {att} FROM {tab}').format(att=sql.Identifier(att_name), tab=sql.Identifier(table_name))
     return select_query(connexion, query)
+
+
+def get_column_dict(connexion, table_name, att):
+    query = sql.SQL('SELECT {att} FROM {tab}').format(att=sql.Identifier(att), tab=sql.Identifier(table_name))
+    with connexion.cursor as cursor:
+        try: 
+            cursor.row_factory = dict_row   
+            cursor.execute(query)
+            return cursor
+        except psycopg.Error as err:
+            logger.error(err)
+            return None
+
     
 
 def get_equipe_details(connexion, eq_id):
@@ -145,8 +159,23 @@ def create_equipe(connexion, eq_name, eq_color, eq_morpions, nb_morpions):
     params = []
     for m in eq_morpions:
         params.extend([eq_id, m])
-
     
+    insert_query(connexion, insert_morpions_query, params)
+
+
+def delete_equipe(connexion, eq_id):
+    query_eq_morp = """
+        DELETE FROM equipe_morpion WHERE equipe_id = %s
+    """
+
+    query_eq = """ 
+        DELETE FROM equipe WHERE id = %s
+    """
+
+    return delete_query(connexion, query_eq_morp, [eq_id]) and delete_query(connexion, query_eq, [eq_id])
+
+
+
 def insert_to_config(connexion, grid_size, max_turn):
     query = sql.SQL("""
             INSERT INTO configuration (grid_size, max_turns)

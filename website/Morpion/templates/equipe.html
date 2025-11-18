@@ -9,10 +9,16 @@
     <ol>
         {% for inst in REQUEST_VARS['equipes'] %}
         <li>
+            <div class="flag" style="--flag-color: {{ inst[2] }};"></div>
             <strong>
                 <a href="/equipe_detail?id={{ inst[0] }}">{{ inst[1] }}</a>
             </strong>
-            <div class="flag" style="--flag-color: {{ inst[2] }};"></div>
+            <div class="delete_eq"> 
+               <form method="GET" onsubmit="return confirm('Supprimer cette équipe ?');" class="delete-form">
+                    <input type="hidden" name="id" value="{{ inst[0] }}">
+                    <button type="submit" class="delete_btn">🗑️</button>
+                </form>
+            </div>
         </li>
         {% endfor %}
     </ol>

@@ -38,8 +38,6 @@ final_ids = [str(m[0]) for m in selected_morpions]
 # -------- FINALISER CLICKED --------
 if POST and "finaliser" in POST:
     
-    print("FINAL ID" ,final_ids)
-
     if len(selected_ids) != equipe_size:
         REQUEST_VARS['msg'] = "Vous devez sélectionner exactement {} morpions.".format(equipe_size)
     else:
@@ -50,4 +48,4 @@ if POST and "finaliser" in POST:
             selected_ids,
             equipe_size
         )
-        REQUEST_VARS['msg'] = "Équipe créée avec succès !"
+        REQUEST_VARS['msg_sc'] = "Équipe créée avec succès !"
