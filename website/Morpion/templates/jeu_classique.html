@@ -14,24 +14,25 @@
             Nombre de tours maximum : {{ REQUEST_VARS['max_turns'] }}
         </p>
 
-        <!-- grille du morpion -->
-        <table class="morpion-grid">
-            {% for i in range(REQUEST_VARS['grid_size']) %}
-                <tr>
-                    {% for j in range(REQUEST_VARS['grid_size']) %}
-                     <div class = "cell-morpion" >
-                        <td>
-                            <input 
-                                type = "checkbox"
-                                valeur="1">
-                        </td>
-                    </div>    
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
+        <form method="post">
 
-        <p> apre on creera </p>
+            <div class="morpion-container"
+                 style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
+
+                {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
+                    <div class="cell-morpion">
+                        <button class="cell"
+                                name="move"
+                                value="{{ idx }}"
+                                {% if REQUEST_VARS['board'][idx] != "" %}disabled{% endif %}>
+                                {{ REQUEST_VARS['board'][idx] }}
+                        </button>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </form>
+
     {% endif %}
 
 {% endblock %}
