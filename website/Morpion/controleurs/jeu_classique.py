@@ -63,6 +63,7 @@ def game(config):
         SESSION['board'] = [""] * (size * size)
         SESSION['player'] = "X"
         SESSION['turn_count'] = 0
+        board = SESSION['board']
         REQUEST_VARS['end_msg'] = "La partie a été recommencée."
 
     # Handle player move
