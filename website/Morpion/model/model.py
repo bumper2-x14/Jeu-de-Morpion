@@ -1,6 +1,5 @@
 import psycopg
 from psycopg import sql
-from psycopg.rows import dict_row
 from logzero import logger
 from datetime import datetime
 
@@ -109,20 +108,12 @@ def get_instances_by_id(connexion, table_name, id):
 
 
 def get_column(connexion, table_name, att_name):
-    query = sql.SQL('SELECT {att} FROM {tab}').format(att=sql.Identifier(att_name), tab=sql.Identifier(table_name))
-    return select_query(connexion, query)
-
-
-def get_column_dict(connexion, table_name, att):
-    query = sql.SQL('SELECT {att} FROM {tab}').format(att=sql.Identifier(att), tab=sql.Identifier(table_name))
-    with connexion.cursor as cursor:
-        try: 
-            cursor.row_factory = dict_row   
-            cursor.execute(query)
-            return cursor
-        except psycopg.Error as err:
-            logger.error(err)
-            return None
+    query = sql.SQL('SELECT {att} FROM {tab}').format(
+        att=sql.Identifier(att_name),
+        tab=sql.Identifier(table_name)
+    )
+    res = select_query(connexion, query)  
+    return [r[0] for r in res]
 
     
 
@@ -179,7 +170,7 @@ def delete_equipe(connexion, eq_id):
 def insert_to_config(connexion, grid_size, max_turn):
     query = sql.SQL("""
             INSERT INTO configuration (grid_size, max_turns)
-            VALUES (%s, %s)
+            VALUES (%s, %s) 
             """)
     
     return insert_query(connexion, query, [grid_size, max_turn])
@@ -202,7 +193,7 @@ def get_last_config(connexion):
         "id": row[0],
         "grid_size": row[1],
         "max_turns": row[2],
-    }    
+    }   
 
 def get_nb_instances(connexion , table_name):
     query = sql.SQL("SELECT COUNT(id) FROM {tab}").format(tab=sql.Identifier(table_name)) 

@@ -2,7 +2,7 @@
 {% block main_block %}
 
 <div class="create_eq">
-    <a href="creer_equipe">Creer une nouvelle equipe</a>
+    <a href="creer_equipe">Creer une Nouvelle Equipe</a>
 </div>
 
 <div class="equipe_list">
@@ -16,7 +16,12 @@
             <div class="delete_eq"> 
                <form method="GET" onsubmit="return confirm('Supprimer cette équipe ?');" class="delete-form">
                     <input type="hidden" name="id" value="{{ inst[0] }}">
-                    <button type="submit" class="delete_btn">🗑️</button>
+                    <button type="submit" name="delete" class="delete_btn">🗑️</button>
+                    
+                    {% if REQUEST_VARS['delete'] %}
+                        <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['delete'] }}">
+                    {% endif %}
+
                 </form>
             </div>
         </li>

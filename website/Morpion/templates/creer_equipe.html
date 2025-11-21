@@ -13,6 +13,9 @@
                     Nom d'équipe :
                     <input type="text" name="eq_name" id="eq_name">
                 </label>
+                {% if REQUEST_VARS.get('err_choice') and REQUEST_VARS['err_choice'].get('eq_name') %}
+                    <span class="error">{{ REQUEST_VARS['err_choice']['eq_name'] }}</span>
+                {% endif %}
                 <br>
 
                 <label>
@@ -29,6 +32,9 @@
                     Couleur d'équipe :
                     <input type="color" name="eq_col" id="eq_col">
                 </label>
+                {% if REQUEST_VARS.get('err_choice') and REQUEST_VARS['err_choice'].get('eq_col') %}
+                    <span class="error">{{ REQUEST_VARS['err_choice']['eq_col'] }}</span>
+                {% endif %}
                 <br><br>
 
                 {% if REQUEST_VARS['morpions'] %}
@@ -76,54 +82,55 @@
         <fieldset>
             <legend>Morpions choisis</legend>
 
-            {% if REQUEST_VARS['equipe_size'] > 0 and REQUEST_VARS['selected_morpions'] %}
-            <p>Équipe finale ({{ REQUEST_VARS['selected_morpions']|length }} / {{ REQUEST_VARS['equipe_size'] }})</p>
+            {% if REQUEST_VARS.get('equipe_size', 0) > 0 and REQUEST_VARS.get('selected_morpions') %}
+                <p>Équipe finale ({{ REQUEST_VARS['selected_morpions']|length }} / {{ REQUEST_VARS['equipe_size'] }})</p>
 
-            <h4> Nom d'équipe : {{ REQUEST_VARS['eq_name'] }}</h4>
+                <h4> Nom d'équipe : {{ REQUEST_VARS['eq_name'] }}</h4>
 
-            <div class="selected_card_list">
-                {% for inst in REQUEST_VARS['selected_morpions'] %}
-                <div class="card" style="--width-size: 100px; --height-size: 150px;">
-                    <div class="card_inner">
-                        <div class="card_front" style="--card-front-color: {{ POST['eq_col'][0] }}">
-                            <div class="card_image">
-                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                <div class="selected_card_list">
+                    {% for inst in REQUEST_VARS['selected_morpions'] %}
+                    <div class="card" style="--width-size: 100px; --height-size: 150px;">
+                        <div class="card_inner">
+                            <div class="card_front" style="--card-front-color: {{ POST['eq_col'][0] }}">
+                                <div class="card_image">
+                                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                                </div>
+                                <div class="card_name">
+                                    <p>{{ inst[1] }}</p>
+                                </div>
                             </div>
-                            <div class="card_name">
-                                <p>{{ inst[1] }}</p>
-                            </div>
-                        </div>
 
-                        <div class="card_back">
-                            <p>
-                                <strong>PV:</strong> {{ inst[3] }}<br>
-                                <strong>ATT:</strong> {{ inst[4] }}<br>
-                                <strong>MANA:</strong> {{ inst[5] }}<br>
-                                <strong>REU:</strong> {{ inst[6] }}
-                            </p>
+                            <div class="card_back">
+                                <p>
+                                    <strong>PV:</strong> {{ inst[3] }}<br>
+                                    <strong>ATT:</strong> {{ inst[4] }}<br>
+                                    <strong>MANA:</strong> {{ inst[5] }}<br>
+                                    <strong>REU:</strong> {{ inst[6] }}
+                                </p>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            <form method="POST">
-                <br>
-                <button type="submit" name="finaliser" value="1">Finaliser</button>
-                <input type="hidden" name="eq_name" value="{{ REQUEST_VARS['eq_name'] }}">
-                <input type="hidden" name="eq_col" value="{{ REQUEST_VARS['eq_col'] }}">
-                <input type="hidden" name="eq_size" value="{{ REQUEST_VARS['equipe_size'] }}">
+                <form method="POST">
+                    <br>
+                    <button type="submit" name="finaliser" value="1">Finaliser</button>
+                    <input type="hidden" name="eq_name" value="{{ REQUEST_VARS['eq_name'] }}">
+                    <input type="hidden" name="eq_col" value="{{ REQUEST_VARS['eq_col'] }}">
+                    <input type="hidden" name="eq_size" value="{{ REQUEST_VARS['equipe_size'] }}">
 
-                {% for m in REQUEST_VARS['selected_morpions'] %}
-                    <input type="hidden" name="selected_ids" value="{{ m[0] }}">
-                {% endfor %}
-            </form>
+                    {% for m in REQUEST_VARS['selected_morpions'] %}
+                        <input type="hidden" name="selected_ids" value="{{ m[0] }}">
+                    {% endfor %}
 
-            {% if REQUEST_VARS['msg_sc'] %}
-                <p class="success_msg">{{ REQUEST_VARS['msg_sc'] }}</p>
-            {% endif %}
+                </form>
+
+                {% if REQUEST_VARS['msg_sc'] %}
+                    <p class="success_msg">{{ REQUEST_VARS['msg_sc'] }}</p>
+                {% endif %}
 
             {% else %}
-            <p>Choisissez les paramètres d'équipe pour pouvoir sélectionner vos Morpions.</p>
+                <p>Choisissez les paramètres d'équipe pour pouvoir sélectionner vos Morpions.</p>
             {% endif %}
         </fieldset> 
     </div>

@@ -3,35 +3,62 @@
 {% block main_block %}
 
     {% if not REQUEST_VARS['has_config'] %}
-        <h2>Configuration manquante</h2>
-        <p>Vous devez d'abord configurer la partie avant de jouer.</p>
-        <a href="/config_classique" class="btn">Aller à la configuration</a>
+        <div style="text-align: center; margin-top: 20px;">
+            <h2>Configuration manquante</h2>
+            <p>Veuillez d'abord configurer la partie avant de commencer.</p>
+            <a href="/config_classique" class="btn">Aller à la configuration</a>
+        </div>
 
     {% else %}
-        <h2>Jeu classique</h2>
-        <p>
-            Taille de la grille : {{ REQUEST_VARS['grid_size'] }}x{{ REQUEST_VARS['grid_size'] }} <br>
-            Nombre de tours maximum : {{ REQUEST_VARS['max_turns'] }}
-        </p>
 
-        <form method="post">
+        <div style="text-align: center; margin-top: 20px;">
+            <h2>Jeu classique</h2>
+            <p>
+                Taille de la grille : {{ REQUEST_VARS['grid_size'] }} × {{ REQUEST_VARS['grid_size'] }} <br>
+                Tours restants : {{ REQUEST_VARS['count'] }} / {{ REQUEST_VARS['max_turns'] }}
+            </p>
+        </div>
 
-            <div class="morpion-container"
-                 style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
+        <form method="POST">
+            <div class="exit_btn">
+                <button type="submit" name="exit" value="1">
+                    Configuration
+                </button>
+            </div>
+
+            {% if REQUEST_VARS['to_config'] %}
+                <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['to_config'] }}">
+            {% endif %}
+
+            <div class="grid-container" style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
 
                 {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
                     <div class="cell-morpion">
-                        <button class="cell"
+                        <button class="cell {% if idx in REQUEST_VARS.get('win_cells', []) %}win-cell{% endif %}"
                                 name="move"
                                 value="{{ idx }}"
-                                {% if REQUEST_VARS['board'][idx] != "" %}disabled{% endif %}>
-                                {{ REQUEST_VARS['board'][idx] }}
+                                {% if REQUEST_VARS['board'][idx] != "" and REQUEST_VARS['end_game'] %}disabled{% endif %}>
+                            {{ REQUEST_VARS['board'][idx] }}
                         </button>
                     </div>
                 {% endfor %}
 
+                <br><br><br>
             </div>
+
+            <div class="restart_btn">
+                <button type="submit" name="restart" value="1">
+                    Recommencer
+                </button>
+            </div>
+
         </form>
+
+        {% if REQUEST_VARS.get('end_msg') %}
+            <h3 style="text-align: center; margin-top: 20px;">
+                {{ REQUEST_VARS['end_msg'] }}
+            </h3>
+        {% endif %}
 
     {% endif %}
 

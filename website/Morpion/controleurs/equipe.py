@@ -7,4 +7,6 @@ if (equipes):
 
 if GET and "id" in GET:
         print( GET['id'][0])
-        delete_equipe(SESSION['CONNEXION'], GET['id'][0])
+        if delete_equipe(SESSION['CONNEXION'], GET['id'][0]):
+                REQUEST_VARS['delete'] = '/equipe'
+

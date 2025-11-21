@@ -1,62 +1,66 @@
 {% extends "base.html" %}
-
 {% block main_block %}
 
 <form method="POST">
     <div class="config_main">
-
         <fieldset>
-            <legend>Configuration:</legend>
+            <legend>Configuration du Jeu Classique</legend>
 
-            <h4>Choisissez la taille :</h4>
-
+            <h4>Choisissez la taille de la grille :</h4>
             <div class="config_input">
-
                 <label>
-                    <input type="radio" name="size" value="3"
-                    {% if REQUEST_VARS['size'] == "3" %}checked{% endif %}> 3x3
+                    <input type="radio" name="size" value="3" required> 
+                    3×3
                 </label>
-
                 <label>
-                    <input type="radio" name="size" value="4"
-                    {% if REQUEST_VARS['size'] == "4" %}checked{% endif %}> 4x4
+                    <input type="radio" name="size" value="4" required>
+                    4×4
                 </label>
-
-                <br><br>
-
-                <h4>Choisissez le nombre de tours maximum :</h4>
-
-                <input type="number"
-                       name="max_turn"
-                       id="max_turn"
-                       min="1"
-                       required
-                       value="{{ REQUEST_VARS['max_turn'] if REQUEST_VARS['max_turn'] else '' }}">
             </div>
 
             <br>
+            <hr>
 
-            <input type="submit" name="bouton_sauvgarder" value="sauvgarder">
+            <h4>Nombre maximum de tours :</h4>
+            <div class="config_input">
+                <input type="number"
+                       name="max_turn"
+                       id="max_turn"
+                       min="5"
+                       max="200"
+                       required
+                       placeholder="ex: 9">
+            </div>
 
+            <br><br>
+
+            <div class="btn_save">
+                <button type="submit"
+                        name="bouton_sauvgarder"
+                        value="1">
+                    Jouer
+                </button>
+            </div>
         </fieldset>
-
-        <div class="jouer">
-            <input type="submit" name="bouton_jouer" value="jouer">
         </div>
-
     </div>
 </form>
 
-{% if REQUEST_VARS['go_play'] %}
-    <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['go_play'] }}">
-{% endif %}
+<style>
+    .msg-success { color: lightgreen; text-align: center; font-weight: bold; margin: 20px 0; }
+    .msg-error   { color: #ff6b6b; text-align: center; font-weight: bold; margin: 20px 0; }
+</style>
 
 {% if REQUEST_VARS['message'] %}
-    <p style="color: lightgreen;">{{ REQUEST_VARS['message'] }}</p>
+    <p class="msg-success">{{ REQUEST_VARS['message'] }}</p>
+{% endif %}
+{% if REQUEST_VARS['error'] %}
+    <p class="msg-error">{{ REQUEST_VARS['error'] }}</p>
 {% endif %}
 
-{% if REQUEST_VARS['error'] %}
-    <p style="color: red;">{{ REQUEST_VARS['error'] }}</p>
+<!-- Redirection automatique -->
+{% if REQUEST_VARS['play'] %}
+    <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['play'] }}">
 {% endif %}
 
 {% endblock %}
