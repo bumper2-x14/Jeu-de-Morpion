@@ -195,7 +195,34 @@ def get_last_config(connexion):
         "max_turns": row[2],
     }   
 
-def get_nb_instances(connexion , table_name):
+def get_nb_instances(connexion, table_name):
     query = sql.SQL("SELECT COUNT(id) FROM {tab}").format(tab=sql.Identifier(table_name)) 
     
     return select_query(connexion, query)
+
+
+def create_partie(connexion, grid_size, mx_turn, eq1_id, eq2_id):
+    config_query = sql.SQL("""
+            INSERT INTO configuration (grid_size, max_turns)
+            VALUES (%s, %s)
+            RETURNING id 
+    """)
+
+    partie_query = sql.SQL("""
+            INSERT INTO partie (equipe1_id, equipe2_id, config_id)
+            VALUES (%s, %s, %s) 
+            RETURNING id
+    """)
+    
+    with connexion.cursor() as cursor:
+        try:
+            cursor.execute(config_query, [grid_size, mx_turn])
+            config_id = cursor.fetchone()[0]
+            cursor.execute(partie_query, [eq1_id, eq2_id, config_id])
+            partie_id = cursor.fetchone()[0]
+            connexion.commit()
+            return partie_id
+        except psycopg.Error as err:
+            connexion.rollback()
+            logger.error("Insertion de Partie: %s", err)
+            return None

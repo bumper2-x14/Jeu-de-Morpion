@@ -133,7 +133,21 @@
                 }
             });
         });
+
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const team1 = document.getElementById("team_player_1").value.trim();
+            const team2 = document.getElementById("team_player_2").value.trim();
+
+            if (team1 === "" || team2 === "") {
+                e.preventDefault();
+                alert("Veuillez sélectionner une équipe pour chaque joueur.");
+            }
+        });
     </script>
+
+{% if REQUEST_VARS['partie_id'] and REQUEST_VARS['av_play'] %}
+     <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['av_play'] }}?game_id={{ REQUEST_VARS['partie_id'] }}">
+{% endif %}
 
 </form>
 

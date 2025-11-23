@@ -298,7 +298,19 @@ legend {
 /* =========================================================== */
 /* SECTION 7 : PAGE CONFIG CLASSIQUE                           */
 /* =========================================================== */
-.config_main { margin: 0 auto; text-align: center; }
+.config_main {
+    display: flex; 
+    margin: 0 auto; 
+    text-align: center; 
+    align-content: center;
+    justify-content: center;
+}
+
+.config_main fieldset{
+    max-width: 40%;
+    margin-top: 100px;
+    
+}
 
 .config_input {
     display: flex;
@@ -393,13 +405,19 @@ legend {
 /* =========================================================== */
 
 .config_av_main {
+    display: flex;
     margin: 0 auto;
     text-align: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.config_av_main {
+    max-width: 50%;
 }
 
 .config_input_av {
     display: flex;
-    float: left;
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
@@ -409,6 +427,7 @@ legend {
     border: 2px solid rgb(90, 85, 58);
     border-radius: 20px;
     margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 .input_group{
@@ -422,6 +441,7 @@ legend {
     flex-direction: row;
     gap: 20px;
     align-items: center;
+    justify-content: center;
 }
 
 
@@ -434,8 +454,9 @@ legend {
 
 .team_section {
     display: flex;
-    justify-content: right;
+    justify-content: center;
     gap: 30px;
+    margin-bottom: 40px;
 }
 
 .team_p1, .team_p2 {
