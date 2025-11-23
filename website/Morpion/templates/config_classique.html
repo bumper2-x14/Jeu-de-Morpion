@@ -58,7 +58,7 @@
     <p class="msg-error">{{ REQUEST_VARS['error'] }}</p>
 {% endif %}
 
-<!-- Redirection automatique -->
+<!-- Redirection -->
 {% if REQUEST_VARS['play'] %}
     <meta http-equiv="refresh" content="0; url={{ REQUEST_VARS['play'] }}">
 {% endif %}

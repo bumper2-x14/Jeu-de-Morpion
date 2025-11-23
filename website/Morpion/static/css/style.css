@@ -19,7 +19,7 @@ body {
 /* =========================================================== */
 /* SECTION 2 : MISE EN PAGE GÉNÉRALE (layout, containers…)     */
 /* =========================================================== */
-.layout, #center_id {
+.layout, .main_center {
     display: flex;
     flex: 1;
 }
@@ -140,11 +140,22 @@ button:hover,
 }
 
 input[type="radio"] { accent-color: #d1a023; }
-input[type="color"], input[type="number"] {
-    width: 70px;
-    height: 30px;
-    border: none;
+
+input[type="color"], input[type="number"], input[type="text"] {
+    padding: 8px;
+    background: #222;
+    color: wheat;
+    border: 1px solid #b89e67;
     border-radius: 6px;
+}
+
+input[type="text"]{
+    flex: auto;
+}
+
+input[type="color"] {
+    padding: 0;
+    cursor: pointer;
 }
 
 .success_msg {
@@ -266,15 +277,6 @@ label {
     color: #d6c7a1;
 }
 
-input[name="eq_name"] {
-    flex: 1;
-    padding: 8px;
-    background: #222;
-    color: wheat;
-    border: 1px solid #b89e67;
-    border-radius: 6px;
-}
-
 fieldset {
     width: 95%;
     margin: 10px 0;
@@ -386,9 +388,136 @@ legend {
     color: black;
 }
 
+/* =========================================================== */
+/* SECTION 9 : PAGE CONFIG AVANCE                              */
+/* =========================================================== */
+
+.config_av_main {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.config_input_av {
+    display: flex;
+    float: left;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+    gap: 100px;
+    padding: 20px;
+    border: 2px solid rgb(90, 85, 58);
+    border-radius: 20px;
+    margin-top: 20px;
+}
+
+.input_group{
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+}
+
+.radio_row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+
+.config_input_av label {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+
+.team_section {
+    display: flex;
+    justify-content: right;
+    gap: 30px;
+}
+
+.team_p1, .team_p2 {
+    width: 200px;
+    height: 250px;
+    overflow-y: auto;
+    border: 2px solid #555;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f8f8f8;
+    background: rgba(30,30,40,0.6);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.player-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: #111;
+    color: wheat;
+    border: 1px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.team_box {
+    width: 220px;
+    background: rgba(20,20,20,0.7);
+    border: 2px solid #b89e67;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.player-btn:hover {
+    background: #222;
+    border-color: #d1a023;
+}
+
+.player-btn.active {
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    color: black;
+    font-weight: bold;
+    box-shadow: 0 0 6px rgba(209,160,35,0.6);
+}
+
+.chosen_team_display {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #111;
+    color: #d1a023;
+    border: 1px solid #555;
+    min-height: 28px;
+    text-align: center;
+    font-weight: bold;
+    display: flex;           
+    align-items: center;     
+    justify-content: center; 
+    gap: 8px;              
+}
+
+.chosen_team_display .flag {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--flag-color);
+}
+
 
 /* =========================================================== */
-/* SECTION 9 : PAGE MORPION (vrai Tic-Tac-Toe bonus)            */
+/* SECTION 10 : PAGE DE JEU Avancé                             */
+/* =========================================================== */
+
+
+
+/* =========================================================== */
+/* SECTION 11 : PAGE MORPION (vrai Tic-Tac-Toe bonus)          */
 /* =========================================================== */
 .morpion-header {
     margin: 20px auto;
@@ -411,7 +540,7 @@ legend {
 }
 
 /* =========================================================== */
-/* SECTION 10 : PAGES ÉQUIPES (création, liste, détail)        */
+/* SECTION 12 : PAGES ÉQUIPES (création, liste, détail)        */
 /* =========================================================== */
 .eq_deck {
     display: flex;
@@ -431,13 +560,25 @@ legend {
 .eq_creation_main {
     display: flex;
     margin: 10px;
-    gap: 10px;
+    gap: 5px;
     padding: 5px;
     align-items: flex-start;
+    max-width: 100%;
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    border-radius: 10px;
+    flex-wrap: wrap;
 }
 
-.param_set { flex: 2; }
-.eq_final { flex: 1; }
+.param_set { flex: 2; max-width: 68%; }
+.eq_final { flex: 1; max-width: 30%; }
+
+.param_set legend,
+.eq_final legend {
+   display: block;
+   background-color: black;
+   border-radius: 10px;
+   padding: 5px;
+}
 
 .create_eq {
     text-align: center;
@@ -494,7 +635,7 @@ legend {
     font-size: 0.9em;
 }
 
-.equipe_list .flag {
+.flag {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -509,7 +650,7 @@ legend {
 }
 
 /* =========================================================== */
-/* SECTION 11 : ACCUEIL & MENU                                 */
+/* SECTION 13 : ACCUEIL & MENU                                 */
 /* =========================================================== */
 nav {
     display: flex;
@@ -559,7 +700,7 @@ nav li a:hover {
 
 
 /* =========================================================== */
-/* SECTION 12 : UTILITAIRES                                    */
+/* SECTION 14 : UTILITAIRES                                    */
 /* =========================================================== */
 
 

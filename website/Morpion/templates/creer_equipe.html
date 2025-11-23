@@ -11,26 +11,22 @@
 
                 <label for="eq_name">
                     Nom d'équipe :
-                    <input type="text" name="eq_name" id="eq_name">
+                    <input type="text" name="eq_name" id="eq_name" required>
                 </label>
                 {% if REQUEST_VARS.get('err_choice') and REQUEST_VARS['err_choice'].get('eq_name') %}
                     <span class="error">{{ REQUEST_VARS['err_choice']['eq_name'] }}</span>
                 {% endif %}
                 <br>
 
-                <label>
+                <label for="eq_size">
                     Nombre de Morpions :
-                    <input type="radio" name="eq_size" value="6" id="size6">
-                    <label for="size6">6 Morpoins</label>
-
-                    <input type="radio" name="eq_size" value="8" id="size8">
-                    <label for="size8">8 Morpoins</label>
+                    <input type="number" name="eq_size" id="eq_size" min="6" max="8" step="1" required>
                 </label>
                 <br>
 
                 <label for="eq_col">
                     Couleur d'équipe :
-                    <input type="color" name="eq_col" id="eq_col">
+                    <input type="color" name="eq_col" id="eq_col" required>
                 </label>
                 {% if REQUEST_VARS.get('err_choice') and REQUEST_VARS['err_choice'].get('eq_col') %}
                     <span class="error">{{ REQUEST_VARS['err_choice']['eq_col'] }}</span>

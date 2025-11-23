@@ -13,7 +13,6 @@ url = "page_morpion"
 controleur = "controleurs/page_morpion.py"
 template = "templates/page_morpion.html"
 
-
 [[routes]]
 url = "equipe"
 controleur = "controleurs/equipe.py"
@@ -29,7 +28,6 @@ url = "jeu_classique"
 controleur = "controleurs/jeu_classique.py"
 template = "templates/jeu_classique.html"
 
-
 [[routes]]
 url = "config_classique"
 controleur = "controleurs/config_classique.py"
@@ -39,3 +37,13 @@ template = "templates/config_classique.html"
 url = "creer_equipe"
 controleur = "controleurs/creer_equipe.py"
 template = "templates/creer_equipe.html"
+
+[[routes]]
+url = "config_avance"
+controleur = "controleurs/config_avance.py"
+template = "templates/config_avance.html"
+
+[[routes]]
+url = "jeu_avance"
+controleur = "controleurs/jeu_avance.py"
+template = "templates/jeu_avance.html"

@@ -29,7 +29,7 @@ CREATE TABLE equipe_morpion (
 
 CREATE TABLE configuration (
     id SERIAL PRIMARY KEY,
-    grid_size INT NOT NULL, -- 3 ou 4
+    grid_size INT NOT NULL,
     max_turns INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

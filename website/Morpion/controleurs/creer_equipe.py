@@ -43,11 +43,11 @@ if POST:
 
         if POST and "selected_ids" in POST:
             selected_ids = POST['selected_ids']
-            selected_morpions = [m for m in morpions if str(m[0]) in selected_ids]
 
         if equipe_size > 0:
             selected_ids = selected_ids[:equipe_size]
 
+        selected_morpions = [m for m in morpions if str(m[0]) in selected_ids]
         REQUEST_VARS['selected_morpions'] = selected_morpions
         final_ids = [str(m[0]) for m in selected_morpions]
 
