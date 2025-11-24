@@ -4,6 +4,15 @@
 <div class="eq_name"> <h1>{{ REQUEST_VARS['sel_equipe'][0][1] }}</h1> </div>
 <br><br>
 
+<div class="team_hist_section">
+    <ul>
+        {% for t in REQUEST_VARS['team_hist'] %}
+            <li>{{ t[0] }} vs {{ t[1] }} winner: {{ t[2] }} time : {{ t[5] }}  </li>
+        {% endfor %}
+    </ul>    
+</div>
+
+
 {% if REQUEST_VARS['eq_morps'] %}
 <div class="eq_deck">
     {% for inst in REQUEST_VARS['eq_morps'] %}

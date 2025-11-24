@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block main_block %}
+    <h3> Historique des jeu: </h3><br>
+    <div class="hist_section">
+        <ul>
+            {% for t in REQUEST_VARS['historique'] %}
+                <li>{{ t[0] }} vs {{ t[1] }}   winner: {{ t[2] }}  </li>    
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
