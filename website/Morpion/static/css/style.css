@@ -720,8 +720,27 @@ nav li a:hover {
 }
 
 
+
 /* =========================================================== */
-/* SECTION 14 : UTILITAIRES                                    */
+/* SECTION 14 : HISTORIQUE                                     */
+/* =========================================================== */
+
+.hist_section{
+    display: flex;
+    justify-content: center;
+}
+
+.hist_section li{
+    display: block;
+    border: 2px solid gold;
+    box-shadow: 0 0 15px rgba(209, 160, 35, 0.6);;
+    margin: 10px;
+}
+
+
+
+/* =========================================================== */
+/* SECTION 15 : UTILITAIRES                                    */
 /* =========================================================== */
 
 
@@ -741,3 +760,4 @@ nav li a:hover {
 .btn_save,
 .btn_jouer        { text-align: center; margin-left: auto }
 .btn_jouer        {margin-top: 40px; }
+
