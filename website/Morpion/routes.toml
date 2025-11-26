@@ -47,3 +47,8 @@ template = "templates/config_avance.html"
 url = "jeu_avance"
 controleur = "controleurs/jeu_avance.py"
 template = "templates/jeu_avance.html"
+
+[[routes]]
+url = "historique"
+controleur = "controleurs/historique.py"
+template = "templates/historique.html"

@@ -226,3 +226,29 @@ def create_partie(connexion, grid_size, mx_turn, eq1_id, eq2_id):
             connexion.rollback()
             logger.error("Insertion de Partie: %s", err)
             return None
+        
+
+def get_game_hist(connexion):
+    query="""
+    SELECT e1.name AS name1, e2.name AS name2, ew.name as winner
+    FROM partie p
+    JOIN equipe e1 ON p.equipe1_id = e1.id
+    JOIN equipe e2 ON p.equipe2_id = e2.id
+    JOIN equipe ew ON p.winning_equipe_id = ew.id; 
+    """
+    return select_query(connexion, query)
+
+
+def get_team_hist(connexion, eq_id):
+    query="""
+    SELECT 
+    e1.name AS name1, e1.id AS id1,
+    e2.name AS name2, e2.id AS id2,
+    ew.name as winner, start_time  
+    FROM partie p
+    JOIN equipe e1 ON p.equipe1_id = e1.id
+    JOIN equipe e2 ON p.equipe2_id = e2.id
+    JOIN equipe ew ON p.winning_equipe_id = ew.id
+    WHERE e1.id=%s OR e2.id=%s
+    """
+    return select_query(connexion, query, [eq_id, eq_id])
