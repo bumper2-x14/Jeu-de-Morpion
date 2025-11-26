@@ -119,11 +119,18 @@ def get_column(connexion, table_name, att_name):
 
 def get_equipe_details(connexion, eq_id):
     query = """
-        SELECT m.name, m.image, m.hp, m.attack, m.mana, m.skill
+        SELECT m.name, m.image, m.hp, m.attack, m.mana, m.skill, m.id
         FROM equipe e
         JOIN equipe_morpion em ON e.id = em.equipe_id
         JOIN morpion m ON em.morpion_id = m.id
         WHERE e.id = %s
+        """
+    return select_query(connexion, query, [eq_id])
+
+
+def get_equipe_name_color(connexion, eq_id):
+    query = """
+            SELECT name, color from equipe WHERE id = %s    
         """
     return select_query(connexion, query, [eq_id])
 
