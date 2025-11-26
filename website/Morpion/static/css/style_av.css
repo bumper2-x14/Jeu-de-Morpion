@@ -12,3 +12,173 @@ body {
     color: wheat;
     font-family: system-ui, -apple-system, sans-serif;
 }
+
+
+.grid-container {
+    display: grid;
+    gap: 5px;
+    width: 300px;
+    height: 300px;
+    margin: 40px auto 20px;
+    grid-template-columns: repeat(var(--grid-size), 1fr);
+    grid-template-rows: repeat(var(--grid-size), 1fr);
+    text-align: center;
+}
+
+.cell-morpion {
+    width: calc(300px / var(--grid-size));
+    height: calc(300px / var(--grid-size));
+    border: 2px solid #f5deb3;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    color: #f5deb3;
+    font-size: 2.4rem;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.cell-morpion:hover {
+    background-color: #1a1a1a;
+    border-color: #d1a023;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(209, 160, 35, 0.4);
+}
+
+.cell-morpion button {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0px;
+}
+
+.morpion-top-text,
+.morpion-end-message {
+    text-align: center;
+    margin: 15px auto;
+    font-size: 1.3em;
+    color: #f5deb3;
+    max-width: 600px;
+}
+
+.morpion-end-message {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #d1a023;
+    margin: 30px auto;
+}
+
+.cell.win-cell {
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    font-weight: bold;
+    color: black;
+}
+
+
+.card {
+    background-color: transparent;
+    width: var(--width-size, 150px);
+    height: var(--height-size, 200px);
+    border: 1px solid black;
+    perspective: 1000px;
+    overflow: hidden;
+    position: relative;
+}
+
+.card_inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card:hover .card_inner { transform: rotateY(180deg); }
+
+.card_front,
+.card_back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border: 3px solid silver;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.card_front {
+    background: linear-gradient(180deg, var(--card-front-color, #d8c292), #000000);
+    color: white;
+}
+
+.card_back {
+    background: linear-gradient(180deg, silver, black);
+    color: #fff8e1;
+    transform: rotateY(180deg);
+    justify-content: center;
+    font-weight: bold;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.card_image {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.card_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.card_name {
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: URW Chancery L, cursive;
+    padding: 2px 0;
+}
+
+/* Cartes sélectionnables */
+.card_selectable {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+}
+
+.card_selectable input[type="checkbox"] { display: none; }
+
+.card_selectable input[type="checkbox"]:checked + .card {
+    outline: 3px solid gold;
+    box-shadow: 0 0 10px gold;
+}
+
+/* Responsive cartes */
+@media (max-width: 800px) {
+    .card { width: 130px; height: 180px; }
+}
+@media (max-width: 600px) {
+    .card { width: 45%; height: 180px; }
+}

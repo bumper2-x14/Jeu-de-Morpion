@@ -1,20 +1,95 @@
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8" />
-  <base href="/">
-  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-  <meta content="utf-8" http-equiv="encoding">
-  <link type="text/css" rel="stylesheet" href="{{ SESSION['DIRECTORY'] }}/static/css/style_av.css">
-  <link rel="shortcut icon" type="image/x-icon" href="{{ SESSION['DIRECTORY'] }}/static/img/icon.png" />
-  <title>{{ SESSION['APP'] }} - {{ SESSION['BASELINE'] }}</title>
+    <meta charset="utf-8" />
+    <base href="/">
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <link type="text/css" rel="stylesheet" href="{{ SESSION['DIRECTORY'] }}/static/css/style_av.css">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ SESSION['DIRECTORY'] }}/static/img/icon.png" />
+    <title>{{ SESSION['APP'] }} - {{ SESSION['BASELINE'] }}</title>
 </head>
 
 <body>
+    <div class="deck_player1">
+        <div class="game_card">
+            {% if SESSION['eq1_data'] %}
+                {% for inst in SESSION['eq1_data'] %}
+                    <label class="card_selectable">
+                        <input type="checkbox" name="selected_ids" value="{{ inst[0] }}">
+                        <div class="card" style="--width-size: 100px; --height-size: 150px;">
+                            <div class="card_inner">
+                                <div class="card_front">
+                                    <div class="card_image">
+                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                                    </div>
+                                    <div class="card_name">
+                                        <p>{{ inst[1] }}</p>
+                                    </div>
+                                </div>
+                                <div class="card_back">
+                                    <p>
+                                        <strong>PV:</strong> {{ inst[3] }}<br>
+                                        <strong>ATT:</strong> {{ inst[4] }}<br>
+                                        <strong>MANA:</strong> {{ inst[5] }}<br>
+                                        <strong>REU:</strong> {{ inst[6] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="deck_player2">
+        <div class="game_card">
+            {% if SESSION['eq2_data'] %}
+                {% for inst in SESSION['eq2_data'] %}
+                    <label class="card_selectable">
+                        <input type="checkbox" name="selected_ids" value="{{ inst[0] }}">
+                        <div class="card" style="--width-size: 100px; --height-size: 150px;">
+                            <div class="card_inner">
+                                <div class="card_front">
+                                    <div class="card_image">
+                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                                    </div>
+                                    <div class="card_name">
+                                        <p>{{ inst[1] }}</p>
+                                    </div>
+                                </div>
+                                <div class="card_back">
+                                    <p>
+                                        <strong>PV:</strong> {{ inst[3] }}<br>
+                                        <strong>ATT:</strong> {{ inst[4] }}<br>
+                                        <strong>MANA:</strong> {{ inst[5] }}<br>
+                                        <strong>REU:</strong> {{ inst[6] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+
     <div class="game_center">
-        <main>
-            
-        </main>
+        <form method="POST">
+            <div class="grid-container" style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
+                {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
+                <div class="cell-morpion">
+                    <button class="cell" name="move" value="{{ idx }}" {% if REQUEST_VARS['board_av'][idx] !=""%}disabled{% endif %}>
+                        {{ REQUEST_VARS['board_av'][idx] }}
+                    </button>
+                </div>
+                {% endfor %}
+                <br><br><br>
+            </div>
+        </form>
     </div>
 </body>
 

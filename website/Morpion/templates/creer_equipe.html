@@ -36,29 +36,29 @@
                 {% if REQUEST_VARS['morpions'] %}
                 <div class="card_list">
                     {% for inst in REQUEST_VARS['morpions'] %}
-                    <label class="card_selectable">
-                        <input type="checkbox" name="selected_ids" value="{{ inst[0] }}">
-                        <div class="card" style="--width-size: 100px; --height-size: 150px;">
-                            <div class="card_inner">
-                                <div class="card_front">
-                                    <div class="card_image">
-                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                        <label class="card_selectable">
+                            <input type="checkbox" name="selected_ids" value="{{ inst[0] }}">
+                            <div class="card" style="--width-size: 100px; --height-size: 150px;">
+                                <div class="card_inner">
+                                    <div class="card_front">
+                                        <div class="card_image">
+                                            <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[2] }}" alt="{{ inst[1] }}" width="100" height="100">
+                                        </div>
+                                        <div class="card_name">
+                                            <p>{{ inst[1] }}</p>
+                                        </div>
                                     </div>
-                                    <div class="card_name">
-                                        <p>{{ inst[1] }}</p>
+                                    <div class="card_back">
+                                        <p>
+                                            <strong>PV:</strong> {{ inst[3] }}<br>
+                                            <strong>ATT:</strong> {{ inst[4] }}<br>
+                                            <strong>MANA:</strong> {{ inst[5] }}<br>
+                                            <strong>REU:</strong> {{ inst[6] }}
+                                        </p>
                                     </div>
-                                </div>
-                                <div class="card_back">
-                                    <p>
-                                        <strong>PV:</strong> {{ inst[3] }}<br>
-                                        <strong>ATT:</strong> {{ inst[4] }}<br>
-                                        <strong>MANA:</strong> {{ inst[5] }}<br>
-                                        <strong>REU:</strong> {{ inst[6] }}
-                                    </p>
                                 </div>
                             </div>
-                        </div>
-                    </label>
+                        </label>
                     {% endfor %}
                 </div>
 
