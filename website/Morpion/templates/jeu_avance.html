@@ -13,146 +13,220 @@
 
 <body>
 
-<form method="POST" action="jeu_avance">
+<form method="POST" action="jeu_avance" id="game_form">
 
     <input type="hidden" name="game_id" value="{{ REQUEST_VARS['current_game_id'] }}">
+    <input type="hidden" name="selected_card" id="selected_card">
+    <input type="hidden" name="selected_move" id="selected_move">
 
     <!-- ==========================================================
          PLAYER 1 DECK
     =========================================================== -->
-    <div class="deck_player1">
-        <div class="game_card">
-
-            {% if SESSION['eq1_data'] and SESSION['eq1_name_col'] %}
-                <h2>{{ SESSION['eq1_name_col'][0][0] }}</h2>
-
-                {% for inst in SESSION['eq1_data'] %}
-
-                <label class="card_selectable">
-                    <input type="checkbox" name="selected_id_eq1" value="{{ inst['id'] }}">
-
-                    <!-- CARD -->
-                    <div class="card"
-                        style="
-                            --width-size: 100px;
-                            --height-size: 150px;
-                            --card-front-color: {{ SESSION['eq1_name_col'][0][1] }};
-                            --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
-                            --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
-                        ">
-                        
-                        <div class="card_inner">
-                            <div class="card_front">
-
-                                <div class="card_stat left">{{ inst['reu'] }}</div>
-                                <div class="card_stat right">{{ inst['att'] }}</div>
-
-                                <div class="card_image">
-                                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+    <div class="p1_box">
+        <div class="deck_player1">
+            <div class="game_card">
+                {% if SESSION['eq1_data'] and SESSION['eq1_name_col'] %}
+                    <h2>{{ SESSION['eq1_name_col'][0][0] }}</h2>
+                    {% for inst in SESSION['eq1_data'] %}
+                    <label class="card_selectable">
+                        <input type="checkbox" class="deck-checkbox" name="selected_id_eq1" value="{{ inst['id'] }}" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                        <div class="card"
+                            style="
+                                --width-size: 100px;
+                                --height-size: 150px;
+                                --card-front-color: {{ SESSION['eq1_name_col'][0][1] }};
+                                --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
+                                --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
+                            ">
+                            <div class="card_inner">
+                                <div class="card_front">
+                                    <div class="card_stat left">{{ inst['reu'] }}</div>
+                                    <div class="card_stat right">{{ inst['att'] }}</div>
+                                    <div class="card_image">
+                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+                                    </div>
+                                    <div class="card_name">{{ inst['name'] }}</div>
+                                    <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                    <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
                                 </div>
-
-                                <div class="card_name">{{ inst['name'] }}</div>
-
-                                <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
-
                             </div>
                         </div>
-                    </div>
+                    </label>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="player1_armory">
+            <div class="attack">
+                <label class="armory_selectable">
+                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/sword.png">
+                    <input type="checkbox" class="armory_checkbox" name="attack" value="attack" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
                 </label>
-
-                {% endfor %}
-            {% endif %}
-
+            </div>
+            <div class="fireball">
+                <label class="armory_selectable">
+                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/fireball.png">
+                    <input type="checkbox" class="armory_checkbox" name="fireball" value="fireball" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                    <div class="usage_bar"><div class="usage_bar_fill fireball_fill"></div></div>
+                </label>
+            </div>
+            <div class="heal">
+                <label class="armory_selectable">    
+                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/heal.png">
+                    <input type="checkbox" class="armory_checkbox" name="heal" value="heal" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                    <div class="usage_bar"><div class="usage_bar_fill heal_fill"></div></div>
+                </label>
+            </div>
+            <div class="armageddon">
+                <label class="armory_selectable">
+                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/armageddon.png">
+                    <input type="checkbox" class="armory_checkbox" name="armageddon" value="armageddon" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                    <div class="usage_bar"><div class="usage_bar_fill armageddon"></div></div>
+                </label>
+            </div>
         </div>
     </div>
 
     <!-- ==========================================================
          PLAYER 2 DECK
     =========================================================== -->
-    <div class="deck_player2">
-        <div class="game_card">
-
-            {% if SESSION['eq2_data'] and SESSION['eq2_name_col'] %}
-                <h2>{{ SESSION['eq2_name_col'][0][0] }}</h2>
-
-                {% for inst in SESSION['eq2_data'] %}
-
-                <label class="card_selectable">
-                    <input type="checkbox" name="selected_id_eq2" value="{{ inst['id'] }}">
-
-                    <div class="card"
-                        style="
-                            --width-size: 100px;
-                            --height-size: 150px;
-                            --card-front-color: {{ SESSION['eq2_name_col'][0][1] }};
-                            --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
-                            --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
-                        ">
-                        
-                        <div class="card_inner">
-                            <div class="card_front">
-
-                                <div class="card_stat left">{{ inst['reu'] }}</div>
-                                <div class="card_stat right">{{ inst['att'] }}</div>
-
-                                <div class="card_image">
-                                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+    <div class="p2_box">
+        <div class="deck_player2">
+            <div class="game_card">
+                {% if SESSION['eq2_data'] and SESSION['eq2_name_col'] %}
+                    <h2>{{ SESSION['eq2_name_col'][0][0] }}</h2>
+                    {% for inst in SESSION['eq2_data'] %}
+                    <label class="card_selectable">
+                        <input type="checkbox" class="deck-checkbox" name="selected_id_eq2" value="{{ inst['id'] }}" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                        <div class="card"
+                            style="
+                                --width-size: 100px;
+                                --height-size: 150px;
+                                --card-front-color: {{ SESSION['eq2_name_col'][0][1] }};
+                                --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
+                                --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
+                            ">
+                            <div class="card_inner">
+                                <div class="card_front">
+                                    <div class="card_stat left">{{ inst['reu'] }}</div>
+                                    <div class="card_stat right">{{ inst['att'] }}</div>
+                                    <div class="card_image">
+                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+                                    </div>
+                                    <div class="card_name">{{ inst['name'] }}</div>
+                                    <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                    <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
                                 </div>
-
-                                <div class="card_name">{{ inst['name'] }}</div>
-
-                                <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
-
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
 
-                {% endfor %}
-            {% endif %}
-
+        <div class="player2_armory">
+            <div class="attack">
+                    <label class="armory_selectable">
+                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/sword.png">
+                        <input type="checkbox" class="armory_checkbox" name="attack" value="attack" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                    </label>
+                </div>
+                <div class="fireball">
+                    <label class="armory_selectable">
+                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/fireball.png">
+                        <input type="checkbox" class="armory_checkbox" name="fireball" value="fireball" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                        <div class="usage_bar"><div class="usage_bar_fill fireball_fill"></div></div>
+                    </label>
+                </div>
+                <div class="heal">
+                    <label class="armory_selectable">    
+                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/heal.png">
+                        <input type="checkbox" class="armory_checkbox" name="heal" value="heal" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                        <div class="usage_bar"><div class="usage_bar_fill heal_fill"></div></div>
+                    </label>
+                </div>
+                <div class="armageddon">
+                    <label class="armory_selectable">
+                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/armageddon.png">
+                        <input type="checkbox" class="armory_checkbox" name="armageddon" value="armageddon" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                        <div class="usage_bar"><div class="usage_bar_fill armageddon_fill"></div></div>
+                    </label>
+                </div>
         </div>
     </div>
 
     <!-- ==========================================================
          GAME GRID
     =========================================================== -->
-     <div class="game_center">
+    <div class="game_center">
         <div class="grid-container" style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
             {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
-                <div class="cell-morpion">
-                    {% if REQUEST_VARS['board_av'][idx] %}
-                        {% set c = REQUEST_VARS['board_av'][idx] %}
-                        <div class="card"
-                             style="--width-size: 100px;
-                                    --height-size: 150px;
-                                    --card-front-color: {{ c['color'] }};
-                                    --hp-percent: {{ c['pv_percent'] }}%;
-                                    --mana-percent: {{ c['mana_percent'] }}%;">
-                            <div class="card_inner">
-                                <div class="card_front">
-                                    <div class="card_stat left">{{ c['reu'] }}</div>
-                                    <div class="card_stat right">{{ c['att'] }}</div>
-                                    <div class="card_image">
-                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ c['image'] }}">
-                                    </div>
-                                    <div class="card_name">{{ c['name'] }}</div>
-                                    <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                    <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
+            <label class="cell-morpion">
+                {% if SESSION['board_av'][idx] %}
+                    {% set c = SESSION['board_av'][idx] %}
+                    <div class="card"
+                        style="--width-size: 100px;
+                               --height-size: 150px;
+                               --card-front-color: {{ c['color'] }};
+                               --hp-percent: {{ c['pv_percent'] }}%;
+                               --mana-percent: {{ c['mana_percent'] }}%;">
+                        <div class="card_inner">
+                            <div class="card_front">
+                                <div class="card_stat left">{{ c['reu'] }}</div>
+                                <div class="card_stat right">{{ c['att'] }}</div>
+                                <div class="card_image">
+                                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ c['image'] }}">
                                 </div>
+                                <div class="card_name">{{ c['name'] }}</div>
+                                <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
                             </div>
                         </div>
-                    {% else %}
-                        <button class="cell" name="move" value="{{ idx }}"></button>
-                    {% endif %}
-                </div>
+                    </div>
+                {% else %}
+                    <input type="checkbox"
+                           name="selected_grid"
+                           value="{{ idx }}"
+                           data-pos="{{ idx }}"
+                           class="grid-checkbox">
+                {% endif %}
+            </label>
             {% endfor %}
         </div>
     </div>
 
 </form>
+
+<script>
+    let selectedCardId = null;
+
+    // Deck selection
+    document.querySelectorAll(".deck-checkbox").forEach(cb => {
+        cb.addEventListener("change", function() {
+            document.querySelectorAll(".deck-checkbox").forEach(c => {
+                if (c !== cb) c.checked = false;
+            });
+            selectedCardId = cb.checked ? cb.value : null;
+        });
+    });
+
+    // Grid selection
+    document.querySelectorAll(".grid-checkbox").forEach(cell => {
+        cell.addEventListener("change", function() {
+            if (!selectedCardId) {
+                alert("Select a card first!");
+                cell.checked = false;
+                return;
+            }
+            document.getElementById("selected_card").value = selectedCardId;
+            document.getElementById("selected_move").value = cell.dataset.pos;
+
+            document.getElementById("game_form").submit();
+        });
+    });
+</script>
 
 </body>
 </html>

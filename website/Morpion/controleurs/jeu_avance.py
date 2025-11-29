@@ -14,6 +14,9 @@ def create_equipe_list(equipe_data):
             'att': att,
             'reu': reu,
             'id': id,
+            'fireball': 100,
+            'heal': 100,
+            'armageddon': 0
         })
     return team_list
 
@@ -25,12 +28,13 @@ size = None
 game_id = None
 
 if GET and 'game_id' in GET:
-    game_id = int(GET['game_id'][0][0])
+    game_id = int(GET['game_id'][0])
 elif POST and 'game_id' in POST:
     game_id = int(POST['game_id'][0])
 
 if game_id is not None:
     REQUEST_VARS['current_game_id'] = game_id
+    print('game_id:', game_id)
 
     if 'eq1_data' not in SESSION or 'eq2_data' not in SESSION:
         game_data = get_instances_by_id(SESSION['CONNEXION'], 'partie', game_id)
@@ -50,6 +54,7 @@ if game_id is not None:
         SESSION['eq2_name_col'] = get_equipe_name_color(SESSION['CONNEXION'], eq2_id)
 
         size = config_data[0][1]
+        print(size)
         max_turn = config_data[0][2]
 
     if size is None:
@@ -81,39 +86,32 @@ REQUEST_VARS.get('end_game', False)
 # -------------------------
 #  TRAITEMENT DU COUP
 # -------------------------
-if POST and ('selected_id_eq1' in POST or 'selected_id_eq2' in POST) and 'move' in POST:
+SESSION.setdefault('p1_turn', True)
+SESSION.setdefault('p2_turn', False)
 
-    move = int(POST['move'][0])
+if POST and 'selected_card' in POST and 'selected_move' in POST:
+    move = int(POST['selected_move'][0])
+    selected_id = int(POST['selected_card'][0])
     selected_card = None
     selected_team = None
 
-    # --------------------------
-    # SELECTED CARD FROM EQ1
-    # --------------------------
-    if 'selected_id_eq1' in POST:
-        selected_id = int(POST['selected_id_eq1'][0])
-        selected_team = 'eq1'
+    # Determine which team owns the selected card
+    if SESSION['p1_turn']:
         for inst in SESSION['eq1_data']:
             if inst['id'] == selected_id:
                 selected_card = inst
+                selected_team = 'eq1'
                 color = SESSION['eq1_name_col'][0][1]
                 break
-
-    # --------------------------
-    # SELECTED CARD FROM EQ2
-    # --------------------------
-    elif 'selected_id_eq2' in POST:
-        selected_id = int(POST['selected_id_eq2'][0])
-        selected_team = 'eq2'
+    elif SESSION['p2_turn']:
         for inst in SESSION['eq2_data']:
             if inst['id'] == selected_id:
                 selected_card = inst
+                selected_team = 'eq2'
                 color = SESSION['eq2_name_col'][0][1]
                 break
 
-    # --------------------------
-    # APPLY THE MOVE
-    # --------------------------
+    # Place the card on the board
     if selected_card and board[move] == "":
         board[move] = {
             'name': selected_card['name'],
@@ -131,5 +129,9 @@ if POST and ('selected_id_eq1' in POST or 'selected_id_eq2' in POST) and 'move' 
         else:
             SESSION['eq2_data'] = [c for c in SESSION['eq2_data'] if c['id'] != selected_id]
 
-    SESSION['board_av'] = board
-    REQUEST_VARS['board_av'] = board
+        # Switch turns
+        SESSION['p1_turn'] = not SESSION['p1_turn']
+        SESSION['p2_turn'] = not SESSION['p2_turn']
+
+SESSION['board_av'] = board
+REQUEST_VARS['board_av'] = board

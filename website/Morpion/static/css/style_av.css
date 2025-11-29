@@ -13,6 +13,9 @@ body {
     font-family: system-ui, -apple-system, sans-serif;
 }
 
+/*====================================================*/
+/* GAME CENTER & GRID CONTAINER */
+/*====================================================*/
 .game_center {
     display: flex;
     justify-content: center;
@@ -22,26 +25,32 @@ body {
     box-sizing: border-box;
 }
 
+/* GRID CONTAINER */
 .grid-container {
     display: grid;
-    gap: 5px;
+    gap: 7px;
     grid-template-columns: repeat(var(--grid-size), 1fr);
     grid-template-rows: repeat(var(--grid-size), 1fr);
 
-    width: fit-content;
-    height: fit-content;
+    /* Responsive size based on grid size */
+    width: min(calc(var(--grid-size) * 150px), 90vw);
+    height: min(calc(var(--grid-size) * 150px), 90vw);
 
     position: fixed;
-    top: 35%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     
     text-align: center;
 }
 
+/* GRID CELLS */
 .cell-morpion {
-    width: calc(450px / var(--grid-size));
-    height: calc(450px / var(--grid-size));
+    width: 100%;   /* fills grid fraction */
+    height: 100%;  /* keeps square proportional */
+    max-width: 150px;  /* optional max limit */
+    max-height: 150px;
+
     border: 2px solid #f5deb3;
     cursor: pointer;
     display: flex;
@@ -53,8 +62,11 @@ body {
     font-weight: bold;
     transition: all 0.2s ease;
     user-select: none;
+    position: relative;
 }
 
+
+/* Hover effect (same as original button version) */
 .cell-morpion:hover {
     background-color: #1a1a1a;
     border-color: #d1a023;
@@ -62,20 +74,48 @@ body {
     box-shadow: 0 0 15px rgba(209, 160, 35, 0.4);
 }
 
-.cell-morpion button {
+/*====================================================*/
+/* EMPTY GRID CELL (checkbox version) */
+/*====================================================*/
+
+.empty-cell {
     width: 100%;
     height: 100%;
-    background: none;
+    background-color: #000;
     border: none;
-    color: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 0px;
+    transition: all .2s ease;
 }
+
+/* Hover effect for empty cells (linked to parent label hover) */
+.cell-morpion:hover .empty-cell {
+    background-color: #1a1a1a;
+    border-color: #d1a023;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(209,160,35,0.4);
+}
+
+/*====================================================*/
+/* GRID CHECKBOX — HIDDEN */
+/*====================================================*/
+
+.grid-checkbox {
+    display: none;
+
+}
+
+/* Selected grid cell outline */
+.grid-checkbox:checked + .card,
+.grid-checkbox:checked + .empty-cell {
+    outline: 3px solid gold;
+    box-shadow: 0 0 12px gold;
+}
+
+/*====================================================*/
+/* MORPION TEXT */
+/*====================================================*/
 
 .morpion-top-text,
 .morpion-end-message {
@@ -93,6 +133,7 @@ body {
     margin: 30px auto;
 }
 
+/* Winning cell highlight */
 .cell.win-cell {
     background: linear-gradient(90deg, #b89e67, #d1a023);
     font-weight: bold;
@@ -100,9 +141,9 @@ body {
 }
 
 /*====================================================*/
-/* =======================
-   CARD BASE
-======================= */
+/* CARD BASE */
+/*====================================================*/
+
 .card {
     background-color: transparent;
     width: var(--width-size, 150px);
@@ -134,9 +175,10 @@ body {
     box-sizing: border-box;
 }
 
-/* =======================
-   CORNER STATS: REU & ATT
-======================= */
+/*====================================================*/
+/* CORNER STATS */
+/*====================================================*/
+
 .card_stat {
     position: absolute;
     top: 4px;
@@ -149,9 +191,10 @@ body {
 .card_stat.left { left: 4px; }
 .card_stat.right { right: 4px; }
 
-/* =======================
-   IMAGE
-======================= */
+/*====================================================*/
+/* IMAGE */
+/*====================================================*/
+
 .card_image {
     width: 100%;
     height: 70%;
@@ -159,6 +202,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 .card_image img {
     width: 100%;
     height: 100%;
@@ -166,9 +210,10 @@ body {
     border-radius: 6px;
 }
 
-/* =======================
-   NAME
-======================= */
+/*====================================================*/
+/* NAME */
+/*====================================================*/
+
 .card_name {
     width: 100%;
     text-align: center;
@@ -178,9 +223,10 @@ body {
     padding: 4px 0;
 }
 
-/* =======================
-   BARS (HP + MANA)
-======================= */
+/*====================================================*/
+/* BARS */
+/*====================================================*/
+
 .stat_bar {
     width: 90%;
     height: 10px;
@@ -207,23 +253,28 @@ body {
     width: var(--mana-percent, 100%);
 }
 
-/* =======================
-   SELECTION OUTLINE
-======================= */
+/*====================================================*/
+/* CARD SELECTION (DECK) */
+/*====================================================*/
+
 .card_selectable {
     display: inline-block;
     cursor: pointer;
 }
-.card_selectable input[type="checkbox"] { display: none; }
+
+.card_selectable input[type="checkbox"] {
+    display: none;
+}
 
 .card_selectable input[type="checkbox"]:checked + .card {
     outline: 3px solid gold;
     box-shadow: 0 0 10px gold;
 }
 
-/* =======================
-   RESPONSIVE
-======================= */
+/*====================================================*/
+/* RESPONSIVE */
+/*====================================================*/
+
 @media (max-width: 800px) {
     .card { width: 130px; height: 180px; }
 }
@@ -231,18 +282,160 @@ body {
     .card { width: 45%; height: 180px; }
 }
 
-.deck_player1{
+/*====================================================*/
+/* PLAYER DECK POSITIONS */
+/*====================================================*/
+/*====================================================*/
+/* DECKS */
+/*====================================================*/
+
+.deck_player1 {
     position: absolute;
     top: 20px;
     left: 20px;
     max-width: 210px;
-    max-height: 60%;
 }
 
-.deck_player2{
+.deck_player2 {
     position: absolute;
     top: 20px;
     right: 20px;
     max-width: 210px;
-    max-height: 60%;
+}
+
+.deck_player1,
+.deck_player2 {
+    border: 2px solid #d1a023;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    width: 230px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(209,160,35,0.25);
+}
+
+.deck_player1 h2,
+.deck_player2 h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #d1a023;
+}
+
+/*====================================================*/
+/* ARMORY BOXES */
+/*====================================================*/
+
+
+.p1_box, .p2_box {
+    position: relative; 
+}
+
+
+.player1_armory,
+.player2_armory {
+    position: absolute;
+    border: 2px solid #d1a023;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 0 15px rgba(209,160,35,0.25);
+}
+
+.player1_armory {
+    top: 20px; 
+    left: calc(20px + 230px + 20px); 
+}
+
+
+.player2_armory {
+    top: 20px; 
+    right: calc(20px + 230px + 20px);
+}
+
+.player1_armory img,
+.player2_armory img {
+    width: 60%;
+    height: 60%;
+    height: auto;
+    cursor: pointer;
+    transition: transform .2s ease, filter .2s ease;
+}
+
+.player1_armory img:hover,
+.player2_armory img:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px #d1a023);
+}
+
+.armory_selectable input[type="checkbox"]{
+    display: none;
+}
+
+.player1_armory .armory_selectable {
+    flex-direction: row; 
+}
+
+.player2_armory .armory_selectable {
+    flex-direction: row-reverse; 
+}
+
+.armory_selectable {
+    display: flex;
+    align-items: center;     
+    justify-content: flex-start; 
+    padding: 8px;
+    border-bottom: 1px solid rgba(209,160,35,0.25);
+    transition: transform .2s ease, filter .2s ease, background .2s ease;
+    border-radius: 8px;
+    gap: 8px;                 
+}
+
+.armory_selectable:hover {
+    transform: scale(1.10);
+    filter: drop-shadow(0 0 8px #d1a023);
+    background: rgba(209,160,35,0.15);
+}
+
+.armory_selectable:has(input[type="checkbox"]:checked) {
+    background: rgba(209,160,35,0.25);
+    transform: scale(1.05);
+    border: 1px solid #d1a023;
+}
+
+.armory_selectable .sword{
+    align-items: center;
+}
+
+.armory_selectable .usage_bar {
+    width: 10px;              
+    height: 60px;              
+    border-radius: 5px;
+    background: rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;            
+}
+
+.armory_selectable .usage_bar .stat_bar_fill {
+    width: 100%;               
+    height: 0%;               
+    transition: height .35s ease-out;
+    background: limegreen;    
+    position: absolute;
+    bottom: 0;                
+}   
+
+.player1_armory .attack .armory_selectable,
+.player2_armory .attack .armory_selectable {
+    justify-content: center;  
+}
+
+.player1_armory .attack .armory_selectable img,
+.player2_armory .attack .armory_selectable img {
+    margin: 0;             
+    display: block;          
 }
