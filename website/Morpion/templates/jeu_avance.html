@@ -1,232 +1,408 @@
 <!doctype html>
 <html>
 
-<head>
-    <meta charset="utf-8" />
-    <base href="/">
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta content="utf-8" http-equiv="encoding">
-    <link type="text/css" rel="stylesheet" href="{{ SESSION['DIRECTORY'] }}/static/css/style_av.css">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ SESSION['DIRECTORY'] }}/static/img/icon.png" />
-    <title>{{ SESSION['APP'] }} - {{ SESSION['BASELINE'] }}</title>
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <base href="/">
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+        <link type="text/css" rel="stylesheet" href="{{ SESSION['DIRECTORY'] }}/static/css/style_av.css">
+        <link rel="shortcut icon" type="image/x-icon" href="{{ SESSION['DIRECTORY'] }}/static/img/icon.png" />
+        <title>{{ SESSION['APP'] }} - {{ SESSION['BASELINE'] }}</title>
+    </head>
 
-<body>
+    <body>
 
-<form method="POST" action="jeu_avance" id="game_form">
+        <form method="POST" action="jeu_avance" id="game_form">
 
-    <input type="hidden" name="game_id" value="{{ REQUEST_VARS['current_game_id'] }}">
-    <input type="hidden" name="selected_card" id="selected_card">
-    <input type="hidden" name="selected_move" id="selected_move">
+            <input type="hidden" name="game_id" value="{{ REQUEST_VARS['current_game_id'] }}">
 
-    <!-- ==========================================================
-         PLAYER 1 DECK
-    =========================================================== -->
-    <div class="p1_box">
-        <div class="deck_player1">
-            <div class="game_card">
-                {% if SESSION['eq1_data'] and SESSION['eq1_name_col'] %}
-                    <h2>{{ SESSION['eq1_name_col'][0][0] }}</h2>
-                    {% for inst in SESSION['eq1_data'] %}
-                    <label class="card_selectable">
-                        <input type="checkbox" class="deck-checkbox" name="selected_id_eq1" value="{{ inst['id'] }}" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
-                        <div class="card"
-                            style="
-                                --width-size: 100px;
-                                --height-size: 150px;
-                                --card-front-color: {{ SESSION['eq1_name_col'][0][1] }};
-                                --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
-                                --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
-                            ">
-                            <div class="card_inner">
-                                <div class="card_front">
-                                    <div class="card_stat left">{{ inst['reu'] }}</div>
-                                    <div class="card_stat right">{{ inst['att'] }}</div>
-                                    <div class="card_image">
-                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+            <input type="hidden" name="action_type" id="action_type"> 
+
+            <input type="hidden" name="selected_card" id="selected_card">
+            <input type="hidden" name="selected_move" id="selected_move">
+
+            <input type="hidden" name="acting_card" id="acting_card">  
+            <input type="hidden" name="ability" id="ability">          
+            <input type="hidden" name="ability_target" id="ability_target">   
+
+            <!-- ==========================================================
+                PLAYER 1 DECK
+            =========================================================== -->
+            <div class="p1_box">
+                <div class="deck_player1">
+                    <div class="game_card">
+                        {% if SESSION['eq1_data'] and SESSION['eq1_name_col'] %}
+                            <h2>{{ SESSION['eq1_name_col'][0][0] }}</h2>
+                            {% for inst in SESSION['eq1_data'] %}
+                            <label class="card_selectable">
+                                <input type="checkbox" class="deck-checkbox" name="selected_id_eq1" value="{{ inst['id'] }}" data-team="1" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                                <div class="card" data-team="{{ inst['team'] }}" data-fireball="{{ inst['fireball'] }}" data-heal="{{ inst['heal'] }}" data-armageddon="{{ inst['armageddon'] }}"
+                                    style="
+                                        --width-size: 100px;
+                                        --height-size: 150px;
+                                        --card-front-color: {{ SESSION['eq1_name_col'][0][1] }};
+                                        --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
+                                        --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
+                                    ">
+                                    <div class="card_inner">
+                                        <div class="card_front">
+                                            <div class="card_stat left">{{ inst['reu'] }}</div>
+                                            <div class="card_stat right">{{ inst['att'] }}</div>
+                                            <div class="card_image">
+                                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+                                            </div>
+                                            <div class="card_name">{{ inst['name'] }}</div>
+                                            <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                            <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
+                                        </div>
                                     </div>
-                                    <div class="card_name">{{ inst['name'] }}</div>
-                                    <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                    <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
                                 </div>
-                            </div>
-                        </div>
-                    </label>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="player1_armory">
-            <div class="attack">
-                <label class="armory_selectable">
-                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/sword.png">
-                    <input type="checkbox" class="armory_checkbox" name="attack" value="attack" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
-                </label>
-            </div>
-            <div class="fireball">
-                <label class="armory_selectable">
-                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/fireball.png">
-                    <input type="checkbox" class="armory_checkbox" name="fireball" value="fireball" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
-                    <div class="usage_bar"><div class="usage_bar_fill fireball_fill"></div></div>
-                </label>
-            </div>
-            <div class="heal">
-                <label class="armory_selectable">    
-                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/heal.png">
-                    <input type="checkbox" class="armory_checkbox" name="heal" value="heal" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
-                    <div class="usage_bar"><div class="usage_bar_fill heal_fill"></div></div>
-                </label>
-            </div>
-            <div class="armageddon">
-                <label class="armory_selectable">
-                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/armageddon.png">
-                    <input type="checkbox" class="armory_checkbox" name="armageddon" value="armageddon" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
-                    <div class="usage_bar"><div class="usage_bar_fill armageddon"></div></div>
-                </label>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==========================================================
-         PLAYER 2 DECK
-    =========================================================== -->
-    <div class="p2_box">
-        <div class="deck_player2">
-            <div class="game_card">
-                {% if SESSION['eq2_data'] and SESSION['eq2_name_col'] %}
-                    <h2>{{ SESSION['eq2_name_col'][0][0] }}</h2>
-                    {% for inst in SESSION['eq2_data'] %}
-                    <label class="card_selectable">
-                        <input type="checkbox" class="deck-checkbox" name="selected_id_eq2" value="{{ inst['id'] }}" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
-                        <div class="card"
-                            style="
-                                --width-size: 100px;
-                                --height-size: 150px;
-                                --card-front-color: {{ SESSION['eq2_name_col'][0][1] }};
-                                --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
-                                --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
-                            ">
-                            <div class="card_inner">
-                                <div class="card_front">
-                                    <div class="card_stat left">{{ inst['reu'] }}</div>
-                                    <div class="card_stat right">{{ inst['att'] }}</div>
-                                    <div class="card_image">
-                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
-                                    </div>
-                                    <div class="card_name">{{ inst['name'] }}</div>
-                                    <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                    <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="player2_armory">
-            <div class="attack">
-                    <label class="armory_selectable">
-                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/sword.png">
-                        <input type="checkbox" class="armory_checkbox" name="attack" value="attack" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
-                    </label>
-                </div>
-                <div class="fireball">
-                    <label class="armory_selectable">
-                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/fireball.png">
-                        <input type="checkbox" class="armory_checkbox" name="fireball" value="fireball" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
-                        <div class="usage_bar"><div class="usage_bar_fill fireball_fill"></div></div>
-                    </label>
-                </div>
-                <div class="heal">
-                    <label class="armory_selectable">    
-                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/heal.png">
-                        <input type="checkbox" class="armory_checkbox" name="heal" value="heal" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
-                        <div class="usage_bar"><div class="usage_bar_fill heal_fill"></div></div>
-                    </label>
-                </div>
-                <div class="armageddon">
-                    <label class="armory_selectable">
-                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/armageddon.png">
-                        <input type="checkbox" class="armory_checkbox" name="armageddon" value="armageddon" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
-                        <div class="usage_bar"><div class="usage_bar_fill armageddon_fill"></div></div>
-                    </label>
-                </div>
-        </div>
-    </div>
-
-    <!-- ==========================================================
-         GAME GRID
-    =========================================================== -->
-    <div class="game_center">
-        <div class="grid-container" style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
-            {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
-            <label class="cell-morpion">
-                {% if SESSION['board_av'][idx] %}
-                    {% set c = SESSION['board_av'][idx] %}
-                    <div class="card"
-                        style="--width-size: 100px;
-                               --height-size: 150px;
-                               --card-front-color: {{ c['color'] }};
-                               --hp-percent: {{ c['pv_percent'] }}%;
-                               --mana-percent: {{ c['mana_percent'] }}%;">
-                        <div class="card_inner">
-                            <div class="card_front">
-                                <div class="card_stat left">{{ c['reu'] }}</div>
-                                <div class="card_stat right">{{ c['att'] }}</div>
-                                <div class="card_image">
-                                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ c['image'] }}">
-                                </div>
-                                <div class="card_name">{{ c['name'] }}</div>
-                                <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
-                            </div>
-                        </div>
+                            </label>
+                            {% endfor %}
+                        {% endif %}
                     </div>
-                {% else %}
-                    <input type="checkbox"
-                           name="selected_grid"
-                           value="{{ idx }}"
-                           data-pos="{{ idx }}"
-                           class="grid-checkbox">
-                {% endif %}
-            </label>
-            {% endfor %}
-        </div>
-    </div>
+                </div>
 
-</form>
+                <div class="player1_armory">
+                    <div class="attack">
+                        <label class="armory_selectable">
+                            <img src="{{ SESSION['DIRECTORY'] }}/static/img/sword.png">
+                            <input type="checkbox" class="armory_checkbox" name="attack" value="attack" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                        </label>
+                    </div>
+                    <div class="fireball">
+                        <label class="armory_selectable">
+                            <img src="{{ SESSION['DIRECTORY'] }}/static/img/fireball.png">
+                            <input type="checkbox" class="armory_checkbox" name="fireball" value="fireball" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                            <div class="usage_bar"><div class="usage_bar_fill fireball_fill" id="p1_fireball_bar"></div></div>
+                        </label>
+                    </div>
+                    <div class="heal">
+                        <label class="armory_selectable">    
+                            <img src="{{ SESSION['DIRECTORY'] }}/static/img/heal.png">
+                            <input type="checkbox" class="armory_checkbox" name="heal" value="heal" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                            <div class="usage_bar"><div class="usage_bar_fill heal_fill" id="p1_heal_bar"></div></div>
+                        </label>
+                    </div>
+                    <div class="armageddon">
+                        <label class="armory_selectable">
+                            <img src="{{ SESSION['DIRECTORY'] }}/static/img/armageddon.png">
+                            <input type="checkbox" class="armory_checkbox" name="armageddon" value="armageddon" {% if not SESSION['p1_turn'] %} disabled {% endif %}>
+                            <div class="usage_bar"><div class="usage_bar_fill armageddon_fill" id="p1_armageddon_bar"></div></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
 
-<script>
-    let selectedCardId = null;
+            <!-- ==========================================================
+                PLAYER 2 DECK
+            =========================================================== -->
+            <div class="p2_box">
+                <div class="deck_player2">
+                    <div class="game_card">
+                        {% if SESSION['eq2_data'] and SESSION['eq2_name_col'] %}
+                            <h2>{{ SESSION['eq2_name_col'][0][0] }}</h2>
+                            {% for inst in SESSION['eq2_data'] %}
+                            <label class="card_selectable">
+                                <input type="checkbox" class="deck-checkbox" name="selected_id_eq2" value="{{ inst['id'] }}" data-team="2" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                                <div class="card" data-team="{{ inst['team'] }}" data-fireball="{{ inst['fireball'] }}" data-heal="{{ inst['heal'] }}" data-armageddon="{{ inst['armageddon'] }}"
+                                    style="
+                                        --width-size: 100px;
+                                        --height-size: 150px;
+                                        --card-front-color: {{ SESSION['eq2_name_col'][0][1] }};
+                                        --hp-percent: calc({{ inst['pv'] }} / {{ inst['pv_max'] }} * 100)%;
+                                        --mana-percent: calc({{ inst['mana'] }} / {{ inst['mana_max'] }} * 100)%;
+                                    ">
+                                    <div class="card_inner">
+                                        <div class="card_front">
+                                            <div class="card_stat left">{{ inst['reu'] }}</div>
+                                            <div class="card_stat right">{{ inst['att'] }}</div>
+                                            <div class="card_image">
+                                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst['image'] }}">
+                                            </div>
+                                            <div class="card_name">{{ inst['name'] }}</div>
+                                            <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                            <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
 
-    // Deck selection
-    document.querySelectorAll(".deck-checkbox").forEach(cb => {
-        cb.addEventListener("change", function() {
-            document.querySelectorAll(".deck-checkbox").forEach(c => {
-                if (c !== cb) c.checked = false;
-            });
-            selectedCardId = cb.checked ? cb.value : null;
-        });
-    });
+                <div class="player2_armory">
+                    <div class="attack">
+                            <label class="armory_selectable">
+                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/sword.png">
+                                <input type="checkbox" class="armory_checkbox" name="attack" value="attack" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                            </label>
+                        </div>
+                        <div class="fireball">
+                            <label class="armory_selectable">
+                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/fireball.png">
+                                <input type="checkbox" class="armory_checkbox" name="fireball" value="fireball" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                                <div class="usage_bar"><div class="usage_bar_fill fireball_fill" id="p2_fireball_bar"></div></div>
+                            </label>
+                        </div>
+                        <div class="heal">
+                            <label class="armory_selectable">    
+                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/heal.png">
+                                <input type="checkbox" class="armory_checkbox" name="heal" value="heal" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                                <div class="usage_bar"><div class="usage_bar_fill heal_fill" id="p2_heal_bar"></div></div>
+                            </label>
+                        </div>
+                        <div class="armageddon">
+                            <label class="armory_selectable">
+                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/armageddon.png">
+                                <input type="checkbox" class="armory_checkbox" name="armageddon" value="armageddon" {% if not SESSION['p2_turn'] %} disabled {% endif %}>
+                                <div class="usage_bar"><div class="usage_bar_fill armageddon_fill" id="p2_armageddon_bar"></div></div>
+                            </label>
+                        </div>
+                </div>
+            </div>
 
-    // Grid selection
-    document.querySelectorAll(".grid-checkbox").forEach(cell => {
-        cell.addEventListener("change", function() {
-            if (!selectedCardId) {
-                alert("Select a card first!");
-                cell.checked = false;
-                return;
+            <!-- ==========================================================
+                GAME GRID
+            =========================================================== -->
+            <div class="game_center">
+                <div class="grid-container" data-turn="{% if SESSION['p1_turn'] %}1{% else %}2{% endif %}" style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
+                    {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
+                        {% set cell = SESSION['board_av'][idx] %}
+                        <div class="cell-morpion"
+                            data-pos="{{ idx }}"
+                            data-team="{{ cell['team'] if cell else '' }}"
+                            data-id="{{ cell['id'] if cell else '' }}"
+                            data-fireball="{{ cell['fireball'] if cell else '' }}"
+                            data-heal="{{ cell['heal'] if cell else '' }}"
+                            data-armageddon="{{ cell['armageddon'] if cell else '' }}">
+                            
+                            {% if cell %}
+                                <div class="card"
+                                    style="--width-size: 100px;
+                                            --height-size: 150px;
+                                            --card-front-color: {{ cell['color'] }};
+                                            --hp-percent: {{ cell['pv_percent'] }}%;
+                                            --mana-percent: {{ cell['mana_percent'] }}%;">
+                                    <div class="card_inner">
+                                        <div class="card_front">
+                                            <div class="card_stat left">{{ cell['reu'] }}</div>
+                                            <div class="card_stat right">{{ cell['att'] }}</div>
+                                            <div class="card_image">
+                                                <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ cell['image'] }}">
+                                            </div>
+                                            <div class="card_name">{{ cell['name'] }}</div>
+                                            <div class="stat_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                            <div class="stat_bar"><div class="stat_bar_fill mana_fill"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="empty-cell"></div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </form>
+
+        <script>
+            // ==========================================================
+            // UTILITY: get closest card element
+            // ==========================================================
+            function getCardRoot(elem) {
+                return elem.closest(".card");
             }
-            document.getElementById("selected_card").value = selectedCardId;
-            document.getElementById("selected_move").value = cell.dataset.pos;
 
-            document.getElementById("game_form").submit();
-        });
-    });
-</script>
+            // ==========================================================
+            // UPDATE ARMORY BARS
+            // ==========================================================
+            function updateDeckArmoryBars(cardElem) {
+                if (!cardElem) return;
 
-</body>
+                const inputElem = cardElem.closest("label")?.querySelector("input.deck-checkbox");
+                if (!inputElem) return;
+
+                const team = parseInt(inputElem.dataset.team);
+                const team_prefix = team === 1 ? "p1" : "p2";
+
+                const fireball = cardElem.dataset.fireball ?? 0;
+                const heal = cardElem.dataset.heal ?? 0;
+                const armageddon = cardElem.dataset.armageddon ?? 0;
+
+                const f = document.getElementById(team_prefix + "_fireball_bar");
+                const h = document.getElementById(team_prefix + "_heal_bar");
+                const a = document.getElementById(team_prefix + "_armageddon_bar");
+
+                if (f) f.style.setProperty('--fireball-percent', fireball + "%");
+                if (h) h.style.setProperty('--heal-percent', heal + "%");
+                if (a) a.style.setProperty('--armageddon-percent', armageddon + "%");
+            }
+
+            function updateGridArmoryBars(cardElem) {
+                if (!cardElem) return;
+
+                const cell = cardElem.closest(".cell-morpion");
+                if (!cell) return;
+
+                const team = parseInt(cell.dataset.team);
+                if (!team) return;
+
+                const team_prefix = team === 1 ? "p1" : "p2";
+
+                // Read values from the cell dataset
+                const fireball = cell.dataset.fireball ?? 0;
+                const heal = cell.dataset.heal ?? 0;
+                const armageddon = cell.dataset.armageddon ?? 0;
+
+                const f = document.getElementById(team_prefix + "_fireball_bar");
+                const h = document.getElementById(team_prefix + "_heal_bar");
+                const a = document.getElementById(team_prefix + "_armageddon_bar");
+
+                if (f) f.style.setProperty('--fireball-percent', fireball + "%");
+                if (h) h.style.setProperty('--heal-percent', heal + "%");
+                if (a) a.style.setProperty('--armageddon-percent', armageddon + "%");
+            }
+
+            // ==========================================================
+            // STATE VARIABLES
+            // ==========================================================
+            let selectedCardId = null;
+            let chosenAbility = null;
+            let actingCard = null;
+            let waitingForActor = false;
+            let waitingForTarget = false;
+            const currentPlayer = parseInt(document.querySelector(".grid-container").dataset.turn);
+
+            // ==========================================================
+            // DECK CARD SELECTION
+            // ==========================================================
+            document.querySelectorAll(".deck-checkbox").forEach(cb => {
+                cb.addEventListener("change", function () {
+                    document.querySelectorAll(".deck-checkbox").forEach(c => {
+                        if (c !== cb) c.checked = false;
+                    });
+
+                    selectedCardId = cb.checked ? cb.value : null;
+
+                    const cardElem = cb.closest("label").querySelector(".card");
+
+                    // <-- FIX: Just call this directly
+                    updateDeckArmoryBars(cardElem);
+
+                    chosenAbility = null;
+                    actingCard = null;
+                    waitingForActor = false;
+                    waitingForTarget = false;
+
+                    document.querySelectorAll(".armory_checkbox").forEach(a => a.checked = false);
+                });
+            });
+
+            // ==========================================================
+            // ABILITY SELECTION
+            // ==========================================================
+            document.querySelectorAll(".armory_checkbox").forEach(ab => {
+                ab.addEventListener("change", function () {
+                    document.querySelectorAll(".armory_checkbox").forEach(x => {
+                        if (x !== ab) x.checked = false;
+                    });
+
+                    chosenAbility = ab.checked ? ab.value : null;
+
+                    if (!chosenAbility) {
+                        waitingForActor = false;
+                        waitingForTarget = false;
+                        actingCard = null;
+                        return;
+                    }
+
+                    waitingForActor = true;
+                    waitingForTarget = false;
+                    actingCard = null;
+
+                    alert("Ability selected: " + chosenAbility + "\nSelect your acting card on the grid.");
+                });
+            });
+
+            // ==========================================================
+            // GRID CLICK HANDLER - PLACEMENT
+            // ==========================================================
+            document.querySelectorAll(".cell-morpion").forEach(cell => {
+                cell.addEventListener("click", function () {
+                    // Only place a card if no ability is active
+                    if (!chosenAbility) {
+                        if (!selectedCardId) return; // do nothing if no card selected
+                        if (cell.querySelector(".card")) {
+                            alert("Cell is already occupied!");
+                            return;
+                        }
+
+                        document.getElementById("action_type").value = "place";
+                        document.getElementById("selected_card").value = selectedCardId;
+                        document.getElementById("selected_move").value = cell.dataset.pos;
+
+                        document.getElementById("game_form").submit();
+                    }
+                });
+            });
+
+            // ==========================================================
+            // GRID CLICK HANDLER - ACTING CARD / TARGET
+            // ==========================================================
+            document.querySelectorAll(".cell-morpion .card").forEach(card => {
+                card.addEventListener("click", function (e) {
+                    if (!chosenAbility) return; // only active if ability selected
+
+                    const cell = card.closest(".cell-morpion");
+                    const clickedTeam = parseInt(cell.dataset.team);
+
+                    // Acting card selection
+                    if (waitingForActor) {
+                        if (clickedTeam !== currentPlayer) {
+                            alert("You can only select your own card as actor!");
+                            return;
+                        }
+
+                        updateGridArmoryBars(card);
+
+                        actingCard = cell.dataset.id;
+                        waitingForActor = false;
+                        waitingForTarget = true;
+
+                        alert("Actor selected!\nNow select the TARGET of the ability.");
+                        return;
+                    }
+
+                    // Target selection
+                    if (waitingForTarget) {
+                        if (chosenAbility !== "heal" && clickedTeam === currentPlayer) {
+                            alert("You cannot target your own card with this ability!");
+                            return;
+                        }
+
+                        document.getElementById("action_type").value = "ability";
+                        document.getElementById("acting_card").value = actingCard;
+                        document.getElementById("ability").value = chosenAbility;
+                        document.getElementById("ability_target").value = cell.dataset.id;
+
+                        waitingForTarget = false;
+                        actingCard = null;
+                        chosenAbility = null;
+
+                        document.querySelectorAll(".armory_checkbox").forEach(a => a.checked = false);
+
+                        document.getElementById("game_form").submit();
+                    }
+                });
+            });
+
+            </script>
+
+
+        </body>
 </html>

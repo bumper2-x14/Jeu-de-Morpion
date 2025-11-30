@@ -294,6 +294,7 @@ body {
     top: 20px;
     left: 20px;
     max-width: 210px;
+    height: 800px;
 }
 
 .deck_player2 {
@@ -301,6 +302,7 @@ body {
     top: 20px;
     right: 20px;
     max-width: 210px;
+    height: 800px;
 }
 
 .deck_player1,
@@ -325,12 +327,11 @@ body {
 /* ARMORY BOXES */
 /*====================================================*/
 
-
 .p1_box, .p2_box {
     position: relative; 
 }
 
-
+/* Armory container */
 .player1_armory,
 .player2_armory {
     position: absolute;
@@ -350,16 +351,15 @@ body {
     left: calc(20px + 230px + 20px); 
 }
 
-
 .player2_armory {
     top: 20px; 
     right: calc(20px + 230px + 20px);
 }
 
+/* Ability images */
 .player1_armory img,
 .player2_armory img {
     width: 60%;
-    height: 60%;
     height: auto;
     cursor: pointer;
     transition: transform .2s ease, filter .2s ease;
@@ -371,10 +371,12 @@ body {
     filter: drop-shadow(0 0 8px #d1a023);
 }
 
-.armory_selectable input[type="checkbox"]{
+/* Hide checkboxes */
+.armory_selectable input[type="checkbox"] {
     display: none;
 }
 
+/* Flex direction for armory items */
 .player1_armory .armory_selectable {
     flex-direction: row; 
 }
@@ -383,6 +385,7 @@ body {
     flex-direction: row-reverse; 
 }
 
+/* Armory item style */
 .armory_selectable {
     display: flex;
     align-items: center;     
@@ -406,10 +409,11 @@ body {
     border: 1px solid #d1a023;
 }
 
-.armory_selectable .sword{
+.armory_selectable .sword {
     align-items: center;
 }
 
+/* Ability usage bar container */
 .armory_selectable .usage_bar {
     width: 10px;              
     height: 60px;              
@@ -420,14 +424,29 @@ body {
     flex-shrink: 0;            
 }
 
-.armory_selectable .usage_bar .stat_bar_fill {
+/* Ability usage bar fill — controlled by CSS variables */
+.usage_bar_fill {
     width: 100%;               
     height: 0%;               
     transition: height .35s ease-out;
-    background: limegreen;    
     position: absolute;
-    bottom: 0;                
-}   
+    bottom: 0;                    
+}
+
+.usage_bar_fill.fireball_fill {
+    height: var(--fireball-percent, 0%);
+    background-color: orange;
+}
+
+.usage_bar_fill.heal_fill {
+    height: var(--heal-percent, 0%);
+    background-color: limegreen;
+}
+
+.usage_bar_fill.armageddon_fill {
+    height: var(--armageddon-percent, 0%);
+    background-color: purple;
+}
 
 .player1_armory .attack .armory_selectable,
 .player2_armory .attack .armory_selectable {

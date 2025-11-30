@@ -120,8 +120,15 @@ if POST and 'selected_card' in POST and 'selected_move' in POST:
             'mana_percent': int(selected_card['mana'] / selected_card['mana_max'] * 100),
             'att': selected_card['att'],
             'reu': selected_card['reu'],
-            'color': color
+            'color': color,
+            'team': 1 if selected_team== 'eq1' else 2,
+            'id': selected_card['id'],
+            'fireball': selected_card['fireball'],
+            'heal': selected_card['heal'],
+            'armageddon': selected_card['armageddon']
         }
+
+        print(board[move])
 
         # Remove card from team
         if selected_team == 'eq1':
