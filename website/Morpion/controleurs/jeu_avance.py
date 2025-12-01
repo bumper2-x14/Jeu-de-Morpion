@@ -34,6 +34,161 @@ def reward_success(morpion_data):
     """Ajoute 0.5 point de réussite après action réussie"""
     morpion_data['reu'] = morpion_data.get('reu', 0) + 0.5
 
+
+def win_check(board, player_team, move_pos, size):
+    """
+    Vérifie si un joueur gagne après avoir joué à move_pos.
+    player_team = 1 ou 2.
+    """
+    row = move_pos // size
+    col = move_pos % size
+
+    # ----- Vérifier ligne -----
+    row_cells = []
+    for c in range(size):
+        cell = board[row * size + c]
+        if isinstance(cell, dict) and cell.get('team') == player_team:
+            row_cells.append(row * size + c)
+    if len(row_cells) == size:
+        return row_cells
+
+    # ----- Vérifier colonne -----
+    col_cells = []
+    for r in range(size):
+        cell = board[r * size + col]
+        if isinstance(cell, dict) and cell.get('team') == player_team:
+            col_cells.append(r * size + col)
+    if len(col_cells) == size:
+        return col_cells
+
+    # ----- Vérifier diagonale principale -----
+    if row == col:
+        diag1 = []
+        for i in range(size):
+            cell = board[i * size + i]
+            if isinstance(cell, dict) and cell.get('team') == player_team:
+                diag1.append(i * size + i)
+        if len(diag1) == size:
+            return diag1
+
+    # ----- Vérifier diagonale secondaire -----
+    if row + col == size - 1:
+        diag2 = []
+        for i in range(size):
+            idx = i * size + (size - i - 1)
+            cell = board[idx]
+            if isinstance(cell, dict) and cell.get('team') == player_team:
+                diag2.append(idx)
+        if len(diag2) == size:
+            return diag2
+
+    return None
+
+def evaluate_victory(board, size, last_move=None, last_team=None):
+    """
+    Évalue s'il y a une victoire.
+    Retourne un tuple (winner_team, winning_cells) :
+      - winner_team: 1, 2, 'draw', or None
+      - winning_cells: list of indices for highlight or None
+    Utilise win_check si last_move & last_team fournis; sinon vérifie élimination.
+    """
+    # 1) Si un alignement a été réalisé (si dernière action fournie)
+    if last_move is not None and last_team is not None:
+        result = win_check(board, last_team, last_move, size)
+        if result:
+            return last_team, result
+
+    # 2) Victoire par élimination : si une équipe n'a plus de morpions (cell dict)
+    team1_alive = any(isinstance(c, dict) and c.get('team') == 1 for c in board)
+    team2_alive = any(isinstance(c, dict) and c.get('team') == 2 for c in board)
+    if team1_alive and not team2_alive:
+        return 1, None
+    if team2_alive and not team1_alive:
+        return 2, None
+
+    # 3) Pas de victoire détectée
+    return None, None
+
+# ----------------------------
+#  JOURNAL DES ACTIONS
+# ----------------------------
+def make_journal(action_type, actor_cell=None, target_cell=None, move_pos=None, ability_name=None, action_result=None):
+    """
+    Retourne une description textuelle en français pour une action.
+    
+    action_type: 'place' ou 'ability'
+    actor_cell: dictionnaire du morpion agissant
+    target_cell: dictionnaire du morpion cible
+    move_pos: index de placement (0-based)
+    ability_name: nom de la capacité utilisée
+    action_result: résultat de l'action ('hit', 'miss', 'killed', etc.)
+    """
+    if action_type == 'place':
+        if actor_cell and move_pos is not None:
+            return f"{actor_cell['name']} a été placé en position {move_pos + 1}."
+        else:
+            return "Placement invalide."
+
+    elif action_type == 'ability':
+        if not actor_cell:
+            return "Action impossible : acteur introuvable."
+        
+        actor_name = actor_cell.get('name', 'Un morpion')
+        target_name = target_cell.get('name', 'la cible') if target_cell else 'la cible'
+
+        if ability_name == 'attack':
+            if action_result == 'hit':
+                return f"{actor_name} attaque {target_name} et inflige des dégâts."
+            elif action_result == 'killed':
+                return f"{actor_name} attaque {target_name} et le détruit !"
+            elif action_result == 'miss':
+                return f"{actor_name} attaque {target_name} mais échoue."
+            elif action_result == 'friendly_fire_blocked':
+                return f"{actor_name} ne peut pas attaquer un allié !"
+            elif action_result == 'target_not_adjacent':
+                return f"{actor_name} ne peut attaquer {target_name} : cible non adjacente."
+        
+        elif ability_name == 'fireball':
+            if action_result == 'hit':
+                return f"{actor_name} lance une boule de feu sur {target_name}, dégâts infligés."
+            elif action_result == 'killed':
+                return f"{actor_name} lance une boule de feu et détruit {target_name} !"
+            elif action_result == 'miss':
+                return f"{actor_name} lance une boule de feu sur {target_name} mais échoue."
+            elif action_result == 'no_mana':
+                return f"{actor_name} n'a pas assez de mana pour lancer une boule de feu."
+            elif action_result == 'friendly_fire_blocked':
+                return f"{actor_name} ne peut pas lancer de boule de feu sur un allié !"
+        
+        elif ability_name == 'heal':
+            if action_result == 'healed':
+                return f"{actor_name} soigne {target_name} avec succès."
+            elif action_result == 'miss':
+                return f"{actor_name} tente de soigner {target_name} mais échoue."
+            elif action_result == 'no_mana':
+                return f"{actor_name} n'a pas assez de mana pour soigner."
+            elif action_result == 'heal_enemy_blocked':
+                return f"{actor_name} ne peut pas soigner un ennemi !"
+        
+        elif ability_name == 'armageddon':
+            if action_result == 'destroyed':
+                return f"{actor_name} lance Armageddon et détruit la case de {target_name} !"
+            elif action_result == 'miss':
+                return f"{actor_name} tente Armageddon sur {target_name} mais échoue."
+            elif action_result == 'no_mana':
+                return f"{actor_name} n'a pas assez de mana pour lancer Armageddon."
+            elif action_result == 'kill_self_blocked':
+                return f"{actor_name} ne peut pas détruire une case alliée !"
+
+        elif action_result == 'unknown_ability':
+            return f"{actor_name} tente une capacité inconnue."
+        
+        else:
+            return f"{actor_name} effectue {ability_name} avec résultat : {action_result}."
+
+    return "Action inconnue."
+
+
 # ----------------------------
 #  ACTIONS DU JEU
 # ----------------------------
@@ -169,7 +324,7 @@ if size is None:
 SESSION.setdefault('board_av', [""] * (size * size))
 board = SESSION['board_av']
 REQUEST_VARS['board_av'] = board
-REQUEST_VARS['grid_size'] = size
+SESSION['grid_size'] = size
 
 SESSION.setdefault('p1_turn', True)
 SESSION.setdefault('p2_turn', False)
@@ -194,7 +349,7 @@ def end_turn_if_needed(action_result, max_turn):
         print(f"[DEBUG] Changement de tour: P1={SESSION['p1_turn']}, P2={SESSION['p2_turn']}")
 
         # Vérifier fin de partie
-        if SESSION['turn_count'] >= max_turn:
+        if SESSION['turn_count'] >= max_turn:   
             SESSION['game_over'] = True
             REQUEST_VARS['game_over'] = True
             print("[DEBUG] Nombre maximal de tours atteint, fin de la partie !")
@@ -239,12 +394,34 @@ if POST and POST.get('action_type', [None])[0] == 'place':
         else:
             SESSION['eq2_data'] = [c for c in SESSION['eq2_data'] if c['id'] != selected_id]
 
+        journal_text = make_journal(
+            action_type='place',
+            actor_cell=board[move],
+            move_pos=move
+        )
+        REQUEST_VARS['journal_txt'] = journal_text
+
+        winner, winning_cells = evaluate_victory(board, size, last_move=move, last_team=board[move]['team'])
+        if winner is not None:
+            SESSION['game_over'] = True
+            SESSION['winning_cells'] = winning_cells
+            REQUEST_VARS['game_over'] = True
+            REQUEST_VARS['winning_cells'] = winning_cells
+            REQUEST_VARS['winning_team'] = winner
+            print(f"[DEBUG] Victoire détectée après placement pour l'équipe {winner} !")
+
+        
         end_turn_if_needed("valid_place", max_turn)
+
+        
+
 
 # ----------------------------
 #  TRAITEMENT SORTS / ATTAQUES
 # ----------------------------
 if POST and POST.get('action_type', [None])[0] == 'ability':
+    actor_cell = None
+    target_cell = None
     acting_card_id = POST.get('acting_card', [None])[0]
     ability_name = POST.get('ability', [None])[0]
     ability_target_id = POST.get('ability_target', [None])[0]
@@ -318,7 +495,42 @@ if POST and POST.get('action_type', [None])[0] == 'ability':
             print(f"  Index {i}: {c['name']} PV={c['pv']} Mana={c['mana']}")
         else:
             print(f"  Index {i}: vide")
+        
+    journal_text = make_journal(
+        action_type='ability',
+        actor_cell=actor_cell,
+        target_cell=target_cell,
+        ability_name=ability_name,      
+        action_result=action_result
+    )
+    REQUEST_VARS['journal_txt'] = journal_text
 
+    winner, winning_cells = None, None
+    if a_idx is not None and isinstance(board[a_idx], dict):
+        winner, winning_cells = evaluate_victory(board, size, last_move=a_idx, last_team=board[a_idx].get('team'))
+    else:
+        # Si l'acteur n'existe plus (par ex. armageddon l'a détruit), essayer la team de l'attaquant original
+        try:
+            actor_team_guess = int(POST.get('acting_team_guess', [None])[0]) if POST.get('acting_team_guess') else None
+        except Exception:
+            actor_team_guess = None
+        if actor_team_guess is not None:
+            winner, winning_cells = evaluate_victory(board, size, last_move=None, last_team=actor_team_guess)
+
+    # Si pas de victoire par alignement, vérifier élimination
+    if winner is None:
+        elim_winner, _ = evaluate_victory(board, size)
+        if elim_winner is not None:
+            winner = elim_winner
+
+    if winner is not None:
+        SESSION['game_over'] = True
+        SESSION['winning_cells'] = winning_cells
+        REQUEST_VARS['game_over'] = True
+        REQUEST_VARS['winning_cells'] = winning_cells
+        REQUEST_VARS['winning_team'] = winner
+        print(f"[DEBUG] Victoire détectée après action pour l'équipe {winner} !")
+    
     end_turn_if_needed(action_result, max_turn)
 
     SESSION['board_av'] = board

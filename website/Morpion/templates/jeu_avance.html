@@ -167,9 +167,17 @@
             <!-- ==========================================================
                 GAME GRID
             =========================================================== -->
+            <div id="action_description" class="action-description">
+                {% if 'journal_txt' in REQUEST_VARS %}
+                    <p>{{ REQUEST_VARS['journal_txt'] }}</p>
+                {% else %}
+                    <p>Pas de action pour le moment</p>
+                {% endif %}
+            </div>
+
             <div class="game_center">
-                <div class="grid-container" data-turn="{% if SESSION['p1_turn'] %}1{% else %}2{% endif %}" style="--grid-size: {{ REQUEST_VARS['grid_size'] }};">
-                    {% for idx in range(REQUEST_VARS['grid_size'] * REQUEST_VARS['grid_size']) %}
+                <div class="grid-container" data-turn="{% if SESSION['p1_turn'] %}1{% else %}2{% endif %}" style="--grid-size: {{ SESSION['grid_size'] }};">
+                    {% for idx in range(SESSION['grid_size'] * SESSION['grid_size']) %}
                         {% set cell = SESSION['board_av'][idx] %}
                         <div class="cell-morpion"
                             data-pos="{{ idx }}"
@@ -206,7 +214,9 @@
                     {% endfor %}
                 </div>
             </div>
-
+            <div id="turn_tracker" class="turn-tracker">
+                <p>Turn: <span id="current_turn">{{ SESSION['turn_count'] }}</span> / {{ SESSION['max_turn_av'] }}</p>
+            </div>
 
         </form>
 
@@ -456,11 +466,6 @@
                     this.classList.add("selected");
                 });
             });
-
-
-
             </script>
-
-
         </body>
 </html>
