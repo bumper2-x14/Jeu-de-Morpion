@@ -268,18 +268,36 @@
                 if (a) a.style.setProperty('--armageddon-percent', armageddon + "%");
             }
 
+            function clearArmoryBars() {
+                const bars = [
+                    "p1_fireball_bar", "p1_heal_bar", "p1_armageddon_bar",
+                    "p2_fireball_bar", "p2_heal_bar", "p2_armageddon_bar"
+                ];
+
+                bars.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.setProperty("--fireball-percent", "0%");
+                        el.style.setProperty("--heal-percent", "0%");
+                        el.style.setProperty("--armageddon-percent", "0%");
+                    }
+                });
+            }
             // ==========================================================
             // STATE VARIABLES
             // ==========================================================
             let selectedCardId = null;
             let chosenAbility = null;
             let actingCard = null;
-            let waitingForActor = false;
-            let waitingForTarget = false;
+
+            let waitingForActor = true;      // FIRST: choose actor
+            let waitingForAbility = false;   // SECOND: choose ability
+            let waitingForTarget = false;    // THIRD: choose target
+
             const currentPlayer = parseInt(document.querySelector(".grid-container").dataset.turn);
 
             // ==========================================================
-            // DECK CARD SELECTION
+            // DECK CARD SELECTION  (unchanged)
             // ==========================================================
             document.querySelectorAll(".deck-checkbox").forEach(cb => {
                 cb.addEventListener("change", function () {
@@ -290,13 +308,18 @@
                     selectedCardId = cb.checked ? cb.value : null;
 
                     const cardElem = cb.closest("label").querySelector(".card");
+                    if (cb.checked) {
+                        updateDeckArmoryBars(cardElem);
+                    } else {
+                        clearArmoryBars();
+                    }
 
-                    // <-- FIX: Just call this directly
-                    updateDeckArmoryBars(cardElem);
-
+                    // reset ability flow
                     chosenAbility = null;
                     actingCard = null;
-                    waitingForActor = false;
+
+                    waitingForActor = true;
+                    waitingForAbility = false;
                     waitingForTarget = false;
 
                     document.querySelectorAll(".armory_checkbox").forEach(a => a.checked = false);
@@ -304,7 +327,7 @@
             });
 
             // ==========================================================
-            // ABILITY SELECTION
+            // ABILITY SELECTION — now happens AFTER choosing actor
             // ==========================================================
             document.querySelectorAll(".armory_checkbox").forEach(ab => {
                 ab.addEventListener("change", function () {
@@ -315,28 +338,32 @@
                     chosenAbility = ab.checked ? ab.value : null;
 
                     if (!chosenAbility) {
-                        waitingForActor = false;
+                        waitingForAbility = false;
                         waitingForTarget = false;
-                        actingCard = null;
                         return;
                     }
 
-                    waitingForActor = true;
-                    waitingForTarget = false;
-                    actingCard = null;
+                    if (!actingCard) {
+                        alert("Select your acting card on the grid BEFORE choosing an ability.");
+                        ab.checked = false;
+                        chosenAbility = null;
+                        return;
+                    }
 
-                    alert("Ability selected: " + chosenAbility + "\nSelect your acting card on the grid.");
+                    waitingForAbility = false;
+                    waitingForTarget = true;
+
+                    alert("Ability selected: " + chosenAbility + "\nNow select the TARGET.");
                 });
             });
 
             // ==========================================================
-            // GRID CLICK HANDLER - PLACEMENT
+            // GRID CLICK HANDLER - PLACEMENT  (unchanged)
             // ==========================================================
             document.querySelectorAll(".cell-morpion").forEach(cell => {
                 cell.addEventListener("click", function () {
-                    // Only place a card if no ability is active
                     if (!chosenAbility) {
-                        if (!selectedCardId) return; // do nothing if no card selected
+                        if (!selectedCardId) return;
                         if (cell.querySelector(".card")) {
                             alert("Cell is already occupied!");
                             return;
@@ -352,19 +379,17 @@
             });
 
             // ==========================================================
-            // GRID CLICK HANDLER - ACTING CARD / TARGET
+            // GRID CLICK HANDLER - ACTOR → THEN ABILITY → THEN TARGET
             // ==========================================================
             document.querySelectorAll(".cell-morpion .card").forEach(card => {
-                card.addEventListener("click", function (e) {
-                    if (!chosenAbility) return; // only active if ability selected
-
+                card.addEventListener("click", function () {
+                    
                     const cell = card.closest(".cell-morpion");
                     const clickedTeam = parseInt(cell.dataset.team);
 
-                    // Acting card selection
                     if (waitingForActor) {
                         if (clickedTeam !== currentPlayer) {
-                            alert("You can only select your own card as actor!");
+                            alert("You can only select YOUR card as the actor!");
                             return;
                         }
 
@@ -372,16 +397,21 @@
 
                         actingCard = cell.dataset.id;
                         waitingForActor = false;
-                        waitingForTarget = true;
+                        waitingForAbility = true;
 
-                        alert("Actor selected!\nNow select the TARGET of the ability.");
+                        alert("Actor selected! Now choose an ability.");
                         return;
                     }
 
-                    // Target selection
+                    if (waitingForAbility) {
+                        alert("Choose an ability from the armory before selecting a target.");
+                        return;
+                    }
+
                     if (waitingForTarget) {
+
                         if (chosenAbility !== "heal" && clickedTeam === currentPlayer) {
-                            alert("You cannot target your own card with this ability!");
+                            alert("This ability cannot target your own cards!");
                             return;
                         }
 
@@ -390,9 +420,13 @@
                         document.getElementById("ability").value = chosenAbility;
                         document.getElementById("ability_target").value = cell.dataset.id;
 
-                        waitingForTarget = false;
+                        // reset flow
                         actingCard = null;
                         chosenAbility = null;
+
+                        waitingForActor = true;
+                        waitingForAbility = false;
+                        waitingForTarget = false;
 
                         document.querySelectorAll(".armory_checkbox").forEach(a => a.checked = false);
 
@@ -400,6 +434,30 @@
                     }
                 });
             });
+
+            document.querySelectorAll(".cell-morpion").forEach(cell => {
+                cell.addEventListener("click", function () {
+
+                    const team = parseInt(this.dataset.team);
+
+                    if (team !== currentPlayer && team !== 0) {
+                        return;
+                    }
+
+                    if (this.classList.contains("selected")) {
+                        this.classList.remove("selected");
+                        return;
+                    }
+
+                    document.querySelectorAll(".cell-morpion").forEach(c => {
+                        c.classList.remove("selected");
+                    });
+
+                    this.classList.add("selected");
+                });
+            });
+
+
 
             </script>
 

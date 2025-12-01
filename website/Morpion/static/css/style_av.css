@@ -28,7 +28,7 @@ body {
 /* GRID CONTAINER */
 .grid-container {
     display: grid;
-    gap: 7px;
+    gap: 11px;
     grid-template-columns: repeat(var(--grid-size), 1fr);
     grid-template-rows: repeat(var(--grid-size), 1fr);
 
@@ -95,6 +95,14 @@ body {
     border-color: #d1a023;
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(209,160,35,0.4);
+}
+
+.cell-morpion.selected {
+    border-color: gold !important;
+    background-color: rgba(255, 215, 0, 0.15) !important;
+    box-shadow: 0 0 20px gold;
+    transform: scale(1.08);
+    transition: all 0.2s ease-out;
 }
 
 /*====================================================*/
