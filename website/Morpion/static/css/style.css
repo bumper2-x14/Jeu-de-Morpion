@@ -570,6 +570,9 @@ legend {
     gap: 20px;
     max-width: 400px;
     margin: 0 0 20px auto;
+    position: absolute;
+    top: 150px;
+    right: 20PX;
 }
 
 .eq_name {
@@ -731,12 +734,41 @@ nav li a:hover {
 }
 
 .hist_section li{
-    display: block;
-    border: 2px solid gold;
-    box-shadow: 0 0 15px rgba(209, 160, 35, 0.6);;
-    margin: 10px;
+    width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #111;
+    color: wheat;
+    letter-spacing: 1px;
+    word-spacing: 5px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border-left: 5px solid #b89e67;
+    transition: all 0.3s ease;
 }
 
+.team_hist_section{
+    display: flex;
+    justify-content: left;
+}
+
+.team_hist_section li{
+    width: 400px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #111;
+    color: wheat;
+    letter-spacing: 1px;
+    word-spacing: 5px;
+    padding: 5px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border-left: 5px solid #b89e67;
+    transition: all 0.3s ease;  
+}
 
 
 /* =========================================================== */

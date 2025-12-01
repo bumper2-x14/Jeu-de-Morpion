@@ -259,3 +259,27 @@ def get_team_hist(connexion, eq_id):
     WHERE e1.id=%s OR e2.id=%s
     """
     return select_query(connexion, query, [eq_id, eq_id])
+
+
+def insert_into_journal(connexion, partie_id, seq, text):
+    query= sql.SQL("""INSERT INTO journal(partie_id, seq, text)
+                   values(%s,%s,%s)""")
+    return insert_query(connexion, query, [partie_id, seq, text])
+
+
+def get_journal(connexion, prt_id):
+    query="""
+    SELECT seq, text
+    FROM journal 
+    WHERE partie_id = %s
+    """
+    return select_query(connexion, query,[prt_id])  
+
+
+#def game_time(connexion, end_time, start_time):
+#    query=""""
+#    SELECT %s - %s AS diff_seconds
+#    FROM partie; 
+#    """
+#   return  select_query(connexion, query, [end_time, start_time])
+
