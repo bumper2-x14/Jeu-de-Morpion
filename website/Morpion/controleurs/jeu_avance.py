@@ -4,11 +4,12 @@ import random
 # ----------------------------
 #  UTILITAIRES / CREATION DE L'EQUIPE
 # ----------------------------
-def create_equipe_list(equipe_data):
+def create_equipe_list(equipe_data, team_num):
     """Crée la liste de morpions pour une équipe avec toutes leurs stats"""
     team_list = []
     for entry in equipe_data:
-        name, image, pv, att, mana, reu, id = entry
+        name, image, pv, att, mana, reu, id_ = entry 
+        unique_id = f"{id_}_{team_num}"
         team_list.append({
             'name': name,
             'image': image,
@@ -18,7 +19,8 @@ def create_equipe_list(equipe_data):
             'mana_max': mana,
             'att': att,
             'reu': reu,
-            'id': id,
+            'original_id': id_,  
+            'id': unique_id,    
             'fireball': 100,
             'heal': 100,
             'armageddon': 100
@@ -130,12 +132,7 @@ def make_journal(action_type, actor_cell=None, target_cell=None, move_pos=None, 
     """
     Retourne une description textuelle en français pour une action.
     
-    action_type: 'place' ou 'ability'
-    actor_cell: dictionnaire du morpion agissant
-    target_cell: dictionnaire du morpion cible
-    move_pos: index de placement (0-based)
-    ability_name: nom de la capacité utilisée
-    action_result: résultat de l'action ('hit', 'miss', 'killed', etc.)
+    Toutes les mises en forme de type Markdown (**) ont été retirées.
     """
     if action_type == 'place':
         if actor_cell and move_pos is not None:
@@ -148,19 +145,37 @@ def make_journal(action_type, actor_cell=None, target_cell=None, move_pos=None, 
             return "Action impossible : acteur introuvable."
         
         actor_name = actor_cell.get('name', 'Un morpion')
-        target_name = target_cell.get('name', 'la cible') if target_cell else 'la cible'
+        # Détermine le nom de la cible.
+        target_name = target_cell.get('name', 'la cible') if isinstance(target_cell, dict) else 'la case'
 
+        # --- Gestion des résultats d'échec génériques qui n'entrainent PAS de changement de tour ---
+        if action_result in ('actor_not_found', 'target_not_found', 'actor_not_yours', 'target_not_adjacent', 'invalid_target', 'friendly_fire_blocked', 'heal_enemy_blocked', 'kill_self_blocked'):
+            if action_result == 'actor_not_yours':
+                return f"Action impossible : {actor_name} n'appartient pas au joueur courant."
+            if action_result == 'target_not_found':
+                return f"Action impossible : cible introuvable."
+            if action_result == 'invalid_target':
+                return f"Action impossible : cible invalide pour la capacité {ability_name}."
+            if action_result == 'target_not_adjacent':
+                return f"Action bloquée : cible non adjacente pour l'attaque de {actor_name}."
+            if action_result == 'friendly_fire_blocked':
+                return f"Action bloquée : {actor_name} ne peut pas attaquer un allié !"
+            if action_result == 'heal_enemy_blocked':
+                return f"Action bloquée : {actor_name} ne peut pas soigner un ennemi !"
+            if action_result == 'kill_self_blocked':
+                return f"Action bloquée : {actor_name} ne peut pas détruire une case alliée avec Armageddon !"
+            return f"Action de {actor_name} bloquée pour cause : {action_result}."
+
+
+        # --- Gestion des capacités (qui entraînent désormais le changement de tour) ---
+        
         if ability_name == 'attack':
             if action_result == 'hit':
                 return f"{actor_name} attaque {target_name} et inflige des dégâts."
             elif action_result == 'killed':
                 return f"{actor_name} attaque {target_name} et le détruit !"
             elif action_result == 'miss':
-                return f"{actor_name} attaque {target_name} mais échoue."
-            elif action_result == 'friendly_fire_blocked':
-                return f"{actor_name} ne peut pas attaquer un allié !"
-            elif action_result == 'target_not_adjacent':
-                return f"{actor_name} ne peut attaquer {target_name} : cible non adjacente."
+                return f"{actor_name} attaque {target_name} mais échoue. Fin du tour."
         
         elif ability_name == 'fireball':
             if action_result == 'hit':
@@ -168,37 +183,31 @@ def make_journal(action_type, actor_cell=None, target_cell=None, move_pos=None, 
             elif action_result == 'killed':
                 return f"{actor_name} lance une boule de feu et détruit {target_name} !"
             elif action_result == 'miss':
-                return f"{actor_name} lance une boule de feu sur {target_name} mais échoue."
+                return f"{actor_name} lance une boule de feu sur {target_name} mais échoue. Fin du tour."
             elif action_result == 'no_mana':
-                return f"{actor_name} n'a pas assez de mana pour lancer une boule de feu."
-            elif action_result == 'friendly_fire_blocked':
-                return f"{actor_name} ne peut pas lancer de boule de feu sur un allié !"
+                return f"{actor_name} n'a pas assez de mana pour lancer une boule de feu. Fin du tour."
         
         elif ability_name == 'heal':
             if action_result == 'healed':
                 return f"{actor_name} soigne {target_name} avec succès."
             elif action_result == 'miss':
-                return f"{actor_name} tente de soigner {target_name} mais échoue."
+                return f"{actor_name} tente de soigner {target_name} mais échoue. Fin du tour."
             elif action_result == 'no_mana':
-                return f"{actor_name} n'a pas assez de mana pour soigner."
-            elif action_result == 'heal_enemy_blocked':
-                return f"{actor_name} ne peut pas soigner un ennemi !"
+                return f"{actor_name} n'a pas assez de mana pour soigner. Fin du tour."
         
         elif ability_name == 'armageddon':
             if action_result == 'destroyed':
-                return f"{actor_name} lance Armageddon et détruit la case de {target_name} !"
+                return f"{actor_name} lance Armageddon et détruit {target_name} !"
             elif action_result == 'miss':
-                return f"{actor_name} tente Armageddon sur {target_name} mais échoue."
+                return f"{actor_name} tente Armageddon mais échoue. Fin du tour."
             elif action_result == 'no_mana':
-                return f"{actor_name} n'a pas assez de mana pour lancer Armageddon."
-            elif action_result == 'kill_self_blocked':
-                return f"{actor_name} ne peut pas détruire une case alliée !"
+                return f"{actor_name} n'a pas assez de mana pour lancer Armageddon. Fin du tour."
 
         elif action_result == 'unknown_ability':
             return f"{actor_name} tente une capacité inconnue."
         
         else:
-            return f"{actor_name} effectue {ability_name} avec résultat : {action_result}."
+            return f"{actor_name} effectue {ability_name} avec un résultat inattendu : {action_result}."
 
     return "Action inconnue."
 
@@ -322,17 +331,25 @@ def cast_armageddon(actor_cell, board, target_index):
         return "no_mana"
     if target_index < 0 or target_index >= len(board):
         return "invalid_target"
+    
     cell = board[target_index]
+
     if isinstance(cell, dict) and cell['team'] == actor_cell['team']:
         return "kill_self_blocked"
+    
     actor_cell['mana'] -= COST
+    
     if roll_success(actor_cell['reu']):
         reward_success(actor_cell)
+        # SEULEMENT détruire si c'est une vraie carte
         if isinstance(cell, dict):
             cell['pv'] = 0
-        board[target_index] = "X"
-        return "destroyed"
-    return "miss"
+            return "destroyed"
+        else:
+            # Case vide → succès mais rien à détruire
+            return "miss"   # ← CRUCIAL : "miss" instead of "destroyed"
+    
+    return "miss"  # Échec → miss
 
 # ----------------------------
 #  UTILITAIRES PLATEAU
@@ -385,8 +402,8 @@ if game_id is not None:
 
         eq1_id, eq2_id = game_data[0][1], game_data[0][2]
 
-        SESSION['eq1_data'] = create_equipe_list(get_equipe_details(SESSION['CONNEXION'], eq1_id))
-        SESSION['eq2_data'] = create_equipe_list(get_equipe_details(SESSION['CONNEXION'], eq2_id))
+        SESSION['eq1_data'] = create_equipe_list(get_equipe_details(SESSION['CONNEXION'], eq1_id), 1)
+        SESSION['eq2_data'] = create_equipe_list(get_equipe_details(SESSION['CONNEXION'], eq2_id), 2)
 
         SESSION['eq1_name_col'] = get_equipe_name_color(SESSION['CONNEXION'], eq1_id)
         print(f"[DEBUG] Équipe 1: {SESSION['eq1_name_col']}")
@@ -424,7 +441,9 @@ def end_turn_if_needed(action_result, max_turn):
     Incrémente le compteur de tours après une action valide.
     Termine la partie si le nombre maximal de tours est atteint.
     """
-    if action_result not in ("actor_not_found", "target_not_found", "actor_not_yours", "target_not_adjacent"):
+    if action_result not in ("actor_not_found", "target_not_found", "actor_not_yours", "target_not_adjacent", 
+                             "friendly_fire_blocked",  "heal_enemy_blocked",  "kill_self_blocked",):
+        
         SESSION['turn_count'] += 1
         print(f"[DEBUG] Tour {SESSION['turn_count']} / {max_turn}")
 
@@ -451,14 +470,14 @@ if POST and POST.get('action_type', [None])[0] == 'place':
 
     if SESSION['p1_turn']:
         for inst in SESSION['eq1_data']:
-            if inst['id'] == selected_id:
+            if inst['original_id'] == selected_id:  # Match original_id
                 selected_card = inst
                 selected_team = 'eq1'
                 color = SESSION['eq1_name_col'][0][1]
                 break
     elif SESSION['p2_turn']:
         for inst in SESSION['eq2_data']:
-            if inst['id'] == selected_id:
+            if inst['original_id'] == selected_id:
                 selected_card = inst
                 selected_team = 'eq2'
                 color = SESSION['eq2_name_col'][0][1]
@@ -508,11 +527,7 @@ if POST and POST.get('action_type', [None])[0] == 'ability':
     acting_card_id = POST.get('acting_card', [None])[0]
     ability_name = POST.get('ability', [None])[0]
     ability_target_id = POST.get('ability_target', [None])[0]
-    armageddon_targets = []
-    if 'armageddon_targets' not in SESSION:
-        SESSION['armageddon_target'] = []
-    else:
-        armageddon_targets = SESSION['armageddon_target']    
+    
 
     print(f"[DEBUG] ABILITY action: actor={acting_card_id}, ability={ability_name}, target={ability_target_id}")
 
@@ -565,10 +580,7 @@ if POST and POST.get('action_type', [None])[0] == 'ability':
                         print(f"[DEBUG] Résultat heal: {action_result}")
 
                     elif ability_name == 'armageddon':
-                        action_result = cast_armageddon(actor_cell, board, target_index)
-                        if action_result == "destroyed":
-                           armageddon_targets.append(target_index)
-                           SESSION['armageddon_target'] = armageddon_targets
+                        action_result = cast_armageddon(actor_cell, board, target_index)                           
                         print(f"[DEBUG] Résultat armageddon: {action_result}")
 
                     else:
