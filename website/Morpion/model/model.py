@@ -315,3 +315,14 @@ def game_duration(connexion, prt_id):
     return None
 
 
+def get_top_3_teams(connexion):
+    query ="""
+    SELECT e.name, COUNT(*) AS wins
+    FROM partie p
+    JOIN equipe e ON p.winning_equipe_id = e.id
+    WHERE p.winning_equipe_id IS NOT NULL
+    GROUP BY e.id, e.name
+    ORDER BY wins DESC
+    LIMIT 3
+    """
+    return select_query(connexion, query)

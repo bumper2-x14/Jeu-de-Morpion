@@ -1,22 +1,33 @@
  {% extends "base.html" %}
 
  {% block main_block %}
+ <div class="accueil-principale">
+    <h2> Bienvenue sur le champ de bataille du morpion ! Que le meilleur gagne. </h2>
+    <div class="accueil-morpion">
+        
 
- <h2> Bienvenue sur le champ de bataille du morpion ! Que le meilleur gagne. </h2>
+        <p>  
+            Sur ce site, vous pouvez jouer au jeu du morpion en deux modes: 
+        </p>
 
- <p>  
-    Sur ce site, vous pouvez jouer au jeu du morpion en deux modes: 
-</p>
+        <ul>
+            <li><a href="config_classique"><strong>Mode classique </strong> </a> </li><br>
+            <li><a href="config_avance"><strong>Mode avancé </strong></a></li>
+        </ul>
+        
+    </div>
+    
+    <h3> nombre d'instance de la table </h3>
+    <p>    morpion:  {{ REQUEST_VARS['nb_morpion'][0][0] }}<br>
+        equipe:  {{ REQUEST_VARS['nb_equipe'][0][0] }}<br>
+        partie:  {{ REQUEST_VARS['nb_partie'][0][0] }}
+    </p>
 
-<ul>
-    <li><a href="config_classique"><strong>Mode classique </a> </li>
-    <li><a href="config_avance"><strong>Mode avancé </a></li>
-</ul>
- 
-<p>
-    nombre d'instance de la table <br>
-    morpion:  {{ REQUEST_VARS['nb_morpion'][0][0] }}<br>
-    equipe:  {{ REQUEST_VARS['nb_equipe'][0][0] }}<br>
-    partie:  {{ REQUEST_VARS['nb_partie'][0][0] }}
-</p>
- {% endblock %}
+    <h3>Top-3 des équipes avec le plus de victoires</h3>
+    <ol>
+    {% for row in REQUEST_VARS['top3_teams'] %}
+        <li>{{ row[0] }} — {{ row[1] }} victoires</li>
+    {% endfor %}
+    </ol>
+</div>    
+{% endblock %}

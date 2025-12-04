@@ -721,7 +721,27 @@ nav li a:hover {
     }
     main { margin-left: 0; }
 }
+.accueil-principale{
+     text-align: center;
+}
 
+.accueil-morpion {
+    margin: 40px auto;
+    max-width: 600px;
+    padding: 25px 30px;
+    border-radius: 12px;
+    border: 2px solid #b89e67;
+    background: rgba(30,30,40,0.85);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+.accueil-morpion a,
+.accueil-morpion a:visited {
+    color: #d1a023;
+    text-decoration: none;
+    font-weight: bold;
+}
 
 
 /* =========================================================== */
