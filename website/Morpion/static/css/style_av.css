@@ -36,10 +36,11 @@ body {
     width: min(calc(var(--grid-size) * 150px), 90vw);
     height: min(calc(var(--grid-size) * 150px), 90vw);
 
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative; /* Original was fixed, adjusted to relative */
+    top: -110px;
+    left: auto;
+    transform: none;
+    margin: 12px auto;
     
     text-align: center;
 }
@@ -65,13 +66,27 @@ body {
     position: relative;
 }
 
-
 /* Hover effect (same as original button version) */
 .cell-morpion:hover {
     background-color: #1a1a1a;
     border-color: #d1a023;
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(209, 160, 35, 0.4);
+}
+
+.cell-morpion.selected {
+    border-color: gold !important;
+    background-color: rgba(255, 215, 0, 0.15) !important;
+    box-shadow: 0 0 20px gold;
+    transform: scale(1.08);
+    transition: all 0.2s ease-out;
+}
+
+/* Winning cell highlight */
+.cell.win-cell {
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    font-weight: bold;
+    color: black;
 }
 
 /*====================================================*/
@@ -95,14 +110,6 @@ body {
     border-color: #d1a023;
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(209,160,35,0.4);
-}
-
-.cell-morpion.selected {
-    border-color: gold !important;
-    background-color: rgba(255, 215, 0, 0.15) !important;
-    box-shadow: 0 0 20px gold;
-    transform: scale(1.08);
-    transition: all 0.2s ease-out;
 }
 
 /*====================================================*/
@@ -140,14 +147,9 @@ body {
     color: #d1a023;
     margin: 30px auto;
 }
-
-/* Winning cell highlight */
-.cell.win-cell {
-    background: linear-gradient(90deg, #b89e67, #d1a023);
-    font-weight: bold;
-    color: black;
-}
-
+/*====================================================*/
+/* CARD BASE */
+/*====================================================*/
 /*====================================================*/
 /* CARD BASE */
 /*====================================================*/
@@ -177,35 +179,72 @@ body {
     color: white;
     border-radius: 8px;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stacks children vertically */
     align-items: center;
     padding: 6px;
     box-sizing: border-box;
 }
 
 /*====================================================*/
-/* CORNER STATS */
+/* CORNER STATS (Skill/Success & Attack) - NO CHANGE */
 /*====================================================*/
-
-.card_stat {
+.card_stat_container {
     position: absolute;
     top: 4px;
-    font-size: 20px;
+    display: flex;
+    align-items: center;
+    /* Reduced font size for more space */
+    font-size: 14px; 
     font-weight: bold;
-    padding: 2px 6px;
+    /* Reduced padding */
+    padding: 1px 4px; 
     border-radius: 6px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    z-index: 10;
+    transition: width 0.3s ease; 
+    /* Essential: prevents large numbers from wrapping and causing layout shift */
+    white-space: nowrap; 
 }
-.card_stat.left { left: 4px; }
-.card_stat.right { right: 4px; }
+
+/* Skill/Success stat (reu) - ANCHORED RIGHT */
+.card_stat_container.reu {
+    right: 4px; /* Anchored to the right edge */
+    background: rgba(0, 133, 56, 0.86); 
+}
+/* Attacker stat (attack) - ANCHORED LEFT */
+.card_stat_container.attack {
+    left: 4px; /* Anchored to the left edge */
+    background: rgba(205, 21, 1, 0.9); 
+}
+
+/* Icon placeholder - TARGET EMOJI for REU (Skill/Success) */
+.card_stat_container.reu::before {
+    content: '🎯'; 
+    margin-right: 4px;
+    font-size: 14px;
+}
+.card_stat_container.attack::before {
+    content: '⚔️'; 
+    margin-right: 4px;
+    font-size: 14px; /* Ensure icon size consistency */
+}
+
 
 /*====================================================*/
-/* IMAGE */
+/* IMAGE - REFACTORED FOR HEIGHT */
 /*====================================================*/
 
 .card_image {
     width: 100%;
-    height: 70%;
+    /* Change from fixed height (e.g., 70%) to flex-grow: 1. 
+       This makes the image take up all remaining vertical space 
+       after the Name and HP/Mana bars are rendered.
+    */
+    flex-grow: 1; 
+    
+    /* Removed padding-bottom: 25px; to simplify vertical stacking */
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,48 +258,65 @@ body {
 }
 
 /*====================================================*/
-/* NAME */
+/* NAME - COMPACTED */
 /*====================================================*/
 
 .card_name {
     width: 100%;
-    text-align: center;
+    text-align: left;
     font-size: 18px;
     font-weight: bold;
     font-family: URW Chancery L, cursive;
-    padding: 4px 0;
+    padding: 1px 0; /* Minimal vertical padding */
+    /* Ensure this element does not grow vertically */
+    flex-shrink: 0;
 }
 
 /*====================================================*/
-/* BARS */
+/* BARS & MANA CIRCLE - COMPACTED */
 /*====================================================*/
 
-.stat_bar {
+/* HP Bar Container (assuming you renamed it from .stat_bar to .hp_bar) */
+.hp_bar {
     width: 90%;
     height: 10px;
     border-radius: 5px;
-    margin: 3px 0;
+    margin: 1px 0 3px 0; /* Minimal margin: top: 1px, right/left: 0, bottom: 3px */
     overflow: hidden;
     background: rgba(255,255,255,0.3);
     position: relative;
-}
-
-.stat_bar_fill {
-    height: 100%;
-    width: 0%;
-    transition: width .35s ease-out;
+    /* Ensure this element does not grow vertically */
+    flex-shrink: 0;
 }
 
 .hp_fill {
-    background: limegreen;
+    height: 100%;
     width: var(--hp-percent, 100%);
+    background: limegreen;
+    transition: width .35s ease-out;
 }
 
-.mana_fill {
-    background: dodgerblue;
-    width: var(--mana-percent, 100%);
+/* MANA CIRCLE (NEW) - REPOSITIONED */
+.mana_circle {
+    position: absolute; 
+    /* Repositioned to be closer to the bottom, outside the image area */
+    bottom: 25%; 
+    right: 2px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: dodgerblue; 
+    border: 2px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 0 5px rgba(30, 144, 255, 0.8);
+    z-index: 10;
+    /* The content property is not needed here since the mana value is in the HTML */
 }
-
 /*====================================================*/
 /* CARD SELECTION (DECK) */
 /*====================================================*/
@@ -467,16 +523,127 @@ body {
     display: block;          
 }
 
-
 .action-description {
+    /* Alignment and Spacing */
     text-align: center;
     font-weight: bold;
-    margin-bottom: 10px;
+    font-size: 16px;
+    margin: 10px auto; 
+    padding: 5px 12px; /* Internal spacing */
     min-height: 20px;
+    color: black; 
+    background: #c69f42;     
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 8px; 
+    max-width: 500px; 
+    z-index: 5;
 }
+
+.action-description p {
+    margin: 0;
+}
+
+/* ---------- TURN TRACKER & TEAM HIGHLIGHT ---------- */
 
 .turn-tracker {
     text-align: center;
-    margin-top: 10px;
+    margin-top: -160px;
     font-weight: bold;
+    color: #f5deb3;
+    z-index: 1;
+    position: relative;
+}
+
+.turn-tracker .teams-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.team-name {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.03);
+    color: #f5deb3;
+    font-weight: bold;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+/* highlight active team */
+.team-name.active {
+    transform: scale(1.06);
+    box-shadow: 0 0 12px rgba(209,160,35,0.35);
+    border-color: gold;
+    color: black;
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+}
+
+/* small vs separator */
+.vs { color: rgba(245, 222, 179, 0.6); font-weight: normal; }
+
+/* turn count line */
+.turn-count { margin-top: 4px; font-size: 1.05rem; color: #f5deb3; }
+
+/* ---------- MODAL FIN DE PARTIE ---------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.65);
+    z-index: 9999;
+    padding: 20px;
+}
+
+.modal {
+    max-width: 460px;
+    width: 100%;
+    background: #0b0b0b;
+    border: 2px solid #d1a023;
+    border-radius: 12px;
+    padding: 18px;
+    color: #f5deb3;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    text-align: center;
+}
+
+.modal h2 {
+    margin-top: 0;
+    color: #d1a023;
+    font-size: 1.4rem;
+}
+
+.modal-text { margin: 10px 0; font-size: 1.05rem; }
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(209,160,35,0.18);
+    background: rgba(255,255,255,0.03);
+    color: #f5deb3;
+    font-weight: bold;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #b89e67, #d1a023);
+    color: #000;
+    border-color: gold;
+}
+
+/* Small responsive tweaks for modal on phone */
+@media (max-width: 520px) {
+    .modal { padding: 12px; border-radius: 8px; }
+    .teams-row { gap: 8px; }
 }

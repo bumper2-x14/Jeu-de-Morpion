@@ -130,7 +130,7 @@ def get_equipe_details(connexion, eq_id):
 
 def get_equipe_name_color(connexion, eq_id):
     query = """
-            SELECT name, color from equipe WHERE id = %s    
+            SELECT name, color, id from equipe WHERE id = %s    
         """
     return select_query(connexion, query, [eq_id])
 
@@ -233,6 +233,30 @@ def create_partie(connexion, grid_size, mx_turn, eq1_id, eq2_id):
             connexion.rollback()
             logger.error("Insertion de Partie: %s", err)
             return None
+    
+def delete_partie(connexion, prt_id):
+    query_config = """
+        DELETE FROM configuration
+        WHERE id = (
+            SELECT config_id FROM partie WHERE id = %s
+        )
+    """
+
+    query_partie = """ 
+        DELETE FROM partie WHERE id = %s
+    """
+    return delete_query(connexion, query_partie, [prt_id]) and delete_query(connexion, query_config, [prt_id])
+
+
+def update_partie_winner(connexion, prt_id, winner_id, max_turns_reached=False):
+    query= sql.SQL("""
+        UPDATE partie
+        SET winning_equipe_id = %s,
+            end_time = %s,
+            max_turns_reached = %s
+        WHERE id = %s
+    """)
+    return update_query(connexion, query, [winner_id, datetime.now(), max_turns_reached, prt_id])
         
 
 def get_game_hist(connexion):
@@ -267,7 +291,7 @@ def insert_into_journal(connexion, partie_id, seq, text):
     return insert_query(connexion, query, [partie_id, seq, text])
 
 
-def get_journal(connexion, prt_id):
+def get_journal_by_id(connexion, prt_id):
     query="""
     SELECT seq, text
     FROM journal 
@@ -276,10 +300,18 @@ def get_journal(connexion, prt_id):
     return select_query(connexion, query,[prt_id])  
 
 
-#def game_time(connexion, end_time, start_time):
-#    query=""""
-#    SELECT %s - %s AS diff_seconds
-#    FROM partie; 
-#    """
-#   return  select_query(connexion, query, [end_time, start_time])
+def game_duration(connexion, prt_id):
+    query="""
+    SELECT start_time, end_time
+    FROM partie 
+    WHERE id = %s
+    """
+    res = select_query(connexion, query,[prt_id])  
+    if res and res[0][1]:
+        start_time = res[0][0]
+        end_time = res[0][1]
+        duration = end_time - start_time
+        return duration
+    return None
+
 

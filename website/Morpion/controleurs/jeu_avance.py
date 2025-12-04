@@ -1,4 +1,4 @@
-from model.model import get_instances_by_id, get_equipe_details, get_equipe_name_color
+from model.model import get_instances_by_id, get_equipe_details, get_equipe_name_color, delete_partie, update_partie_winner, insert_into_journal
 import random
 
 # ----------------------------
@@ -89,8 +89,12 @@ def evaluate_victory(board, size, last_move=None, last_team=None):
     Évalue s'il y a une victoire.
     Retourne un tuple (winner_team, winning_cells) :
       - winner_team: 1, 2, 'draw', or None
-      - winning_cells: list of indices for highlight or None
+      - winning_cells: list of indices pour surligner ou None
     Utilise win_check si last_move & last_team fournis; sinon vérifie élimination.
+    NOTE: la vérification d'élimination tient désormais compte des réserves
+          (SESSION['eq1_data'] / SESSION['eq2_data']) pour éviter de conclure
+          qu'une équipe est éliminée simplement parce qu'elle n'a pas encore
+          posé de carte sur le plateau.
     """
     # 1) Si un alignement a été réalisé (si dernière action fournie)
     if last_move is not None and last_team is not None:
@@ -98,12 +102,22 @@ def evaluate_victory(board, size, last_move=None, last_team=None):
         if result:
             return last_team, result
 
-    # 2) Victoire par élimination : si une équipe n'a plus de morpions (cell dict)
-    team1_alive = any(isinstance(c, dict) and c.get('team') == 1 for c in board)
-    team2_alive = any(isinstance(c, dict) and c.get('team') == 2 for c in board)
-    if team1_alive and not team2_alive:
+    # 2) Victoire par élimination : si une équipe n'a plus de morpions
+    #    SUR LE PLATEAU **ET** n'a plus de cartes dans sa réserve.
+    team1_on_board = any(isinstance(c, dict) and c.get('team') == 1 for c in board)
+    team2_on_board = any(isinstance(c, dict) and c.get('team') == 2 for c in board)
+
+    team1_in_reserve = bool(SESSION.get('eq1_data'))  # True si la réserve contient encore des cartes
+    team2_in_reserve = bool(SESSION.get('eq2_data'))
+
+    # Si l'équipe 1 possède encore des cartes sur le plateau
+    # et l'équipe 2 n'a ni cartes sur le plateau ni en réserve => victoire 1
+    if team1_on_board and not team2_on_board and not team2_in_reserve:
         return 1, None
-    if team2_alive and not team1_alive:
+
+    # Si l'équipe 2 possède encore des cartes sur le plateau
+    # et l'équipe 1 n'a ni cartes sur le plateau ni en réserve => victoire 2
+    if team2_on_board and not team1_on_board and not team1_in_reserve:
         return 2, None
 
     # 3) Pas de victoire détectée
@@ -188,6 +202,67 @@ def make_journal(action_type, actor_cell=None, target_cell=None, move_pos=None, 
 
     return "Action inconnue."
 
+def clear_game_data():
+    """Supprime les données de la partie en cours dans la session."""
+    keys_to_clear = [
+        'board_av', 'p1_turn', 'p2_turn', 'turn_count',
+        'game_over', 'winning_cells', 'eq1_data', 'eq2_data',
+        'eq1_name_col', 'eq2_name_col', 'grid_size', 'max_turn_av','current_game_id'
+    ]
+    for key in keys_to_clear:
+        SESSION.pop(key, None)
+
+def end_game_handler():
+    # 1. Enregistrer & Quitter (Save and Exit)
+    if POST and POST.get('end_submit', [None])[0] == '1':
+        winner_team_num = REQUEST_VARS.get('winning_team')
+        if winner_team_num is None:
+            # Fallback in case of form submission without redirection after victory
+            try:
+                winner_team_num = int(POST.get('winning_equipe_id', [None])[0])
+            except (TypeError, ValueError):
+                winner_team_num = None
+                
+        game_id_to_update = SESSION.get('current_game_id')
+        
+        # Get max_turn_reached status
+        max_turn_reached = POST.get('max_turn_reached', ['0'])[0] == '1' # Convert to boolean
+
+        # Update winner in DB if a winner exists
+        if winner_team_num in (1, 2) and game_id_to_update is not None:
+            
+            session_key = f'eq{winner_team_num}_name_col'
+            team_col_data = SESSION.get(session_key, [[None, None, None]])
+            winner_equipe_id = team_col_data[0][2]
+
+            if winner_equipe_id is not None:
+                # Calls update_partie_winner(connexion, prt_id, winner_id, max_turns_reached)
+                update_partie_winner(
+                    SESSION['CONNEXION'], 
+                    game_id_to_update, 
+                    winner_equipe_id, 
+                    max_turn_reached
+                )
+                print(f"[DEBUG] Partie enregistrée. Winner DB ID: {winner_equipe_id}, Max Turns: {max_turn_reached}")
+            else:
+                print(f"[ERROR] Could not find DB Equipe ID for team {winner_team_num}. Save failed.")
+                
+        REQUEST_VARS['end_submit'] = True        
+        clear_game_data()
+        return
+
+    # 2. Quitter (Abandon and Exit)
+    if POST and POST.get('end_non_submit', [None])[0] == '1':
+        game_id_to_delete = SESSION.get('current_game_id')
+        
+        # Delete the game and its configuration from the database
+        if game_id_to_delete is not None:
+            # Calls delete_partie(connexion, prt_id)
+            delete_partie(SESSION['CONNEXION'], game_id_to_delete)
+            
+        REQUEST_VARS['end_non_submit'] = True
+        clear_game_data()
+        return
 
 # ----------------------------
 #  ACTIONS DU JEU
@@ -287,6 +362,10 @@ def remove_dead_from_board(board):
 # ----------------------------
 size = None
 game_id = None
+
+if 'grid_size' in SESSION:
+    size = SESSION['grid_size']
+
 if 'max_turn_av' not in SESSION:
     max_turn = None
 else:
@@ -298,7 +377,7 @@ elif POST and 'game_id' in POST:
     game_id = int(POST['game_id'][0])
 
 if game_id is not None:
-    REQUEST_VARS['current_game_id'] = game_id
+    SESSION['current_game_id'] = game_id
     if 'eq1_data' not in SESSION or 'eq2_data' not in SESSION:
         game_data = get_instances_by_id(SESSION['CONNEXION'], 'partie', game_id)
         config_id = game_data[0][3]
@@ -310,9 +389,12 @@ if game_id is not None:
         SESSION['eq2_data'] = create_equipe_list(get_equipe_details(SESSION['CONNEXION'], eq2_id))
 
         SESSION['eq1_name_col'] = get_equipe_name_color(SESSION['CONNEXION'], eq1_id)
+        print(f"[DEBUG] Équipe 1: {SESSION['eq1_name_col']}")
         SESSION['eq2_name_col'] = get_equipe_name_color(SESSION['CONNEXION'], eq2_id)
 
         size = config_data[0][1]
+        SESSION['grid_size'] = size
+
         max_turn = config_data[0][2]  # Nombre maximal de tours
         SESSION['max_turn_av'] = max_turn
 
@@ -321,6 +403,9 @@ if game_id is not None:
 # ----------------------------
 if size is None:
     size = 3
+    SESSION['grid_size'] = size
+
+
 SESSION.setdefault('board_av', [""] * (size * size))
 board = SESSION['board_av']
 REQUEST_VARS['board_av'] = board
@@ -412,8 +497,6 @@ if POST and POST.get('action_type', [None])[0] == 'place':
 
         
         end_turn_if_needed("valid_place", max_turn)
-
-        
 
 
 # ----------------------------
@@ -537,3 +620,10 @@ if POST and POST.get('action_type', [None])[0] == 'ability':
     REQUEST_VARS['board_av'] = board
     REQUEST_VARS['last_action_result'] = action_result
     print(f"[DEBUG] Résultat de l'action: {action_result}")
+
+
+# ----------------------------
+#  TRAITEMENT FIN DE PARTIE
+# ----------------------------
+
+end_game_handler()
