@@ -176,36 +176,43 @@
                     <div class="grid-container" data-turn="{% if SESSION['p1_turn'] %}1{% else %}2{% endif %}" style="--grid-size: {{ SESSION['grid_size'] }};">
                         {% for idx in range(SESSION['grid_size'] * SESSION['grid_size']) %}
                             {% set cell = SESSION['board_av'][idx] %}
-                            <div class="cell-morpion"
+                            <div class="cell-morpion {% if idx in SESSION['armageddon_target'] %}armageddon-locked{% endif %}"
                                 data-pos="{{ idx }}"
                                 data-team="{{ cell['team'] if cell else '' }}"
                                 data-id="{{ cell['id'] if cell else '' }}"
                                 data-fireball="{{ cell['fireball'] if cell else '' }}"
                                 data-heal="{{ cell['heal'] if cell else '' }}"
                                 data-armageddon="{{ cell['armageddon'] if cell else '' }}">
-                                
-                                {% if cell %}
-                                    <div class="card"
-                                        style="--width-size: 100px;
-                                                --height-size: 150px;
-                                                --card-front-color: {{ cell['color'] }};
-                                                --hp-percent: {{ cell['pv_percent'] }}%;
-                                                /* REMOVED: Old mana CSS variable: --mana-percent: {{ cell['mana_percent'] }}%; */">
-                                        <div class="card_inner">
-                                            <div class="card_front">
-                                                <div class="card_stat_container reu">{{ cell['reu'] }}</div>
-                                                <div class="card_stat_container attack">{{ cell['att'] }}</div>
-                                                <div class="card_image">
-                                                    <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ cell['image'] }}">
-                                                </div>
-                                                <div class="mana_circle">{{ cell['mana'] }}</div>
-                                                <div class="card_name">{{ cell['name'] }}</div>
-                                                <div class="hp_bar"><div class="stat_bar_fill hp_fill"></div></div>
-                                                </div>
-                                        </div>
+
+                                {% if idx in SESSION['armageddon_target']%}
+                                    <div class="armageddon-effect">
+                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/crack2.png" >
                                     </div>
+
                                 {% else %}
-                                    <div class="empty-cell"></div>
+                                    {% if cell %}
+                                        <div class="card"
+                                            style="--width-size: 100px;
+                                                    --height-size: 150px;
+                                                    --card-front-color: {{ cell['color'] }};
+                                                    --hp-percent: {{ cell['pv_percent'] }}%;
+                                                    /* REMOVED: Old mana CSS variable: --mana-percent: {{ cell['mana_percent'] }}%; */">
+                                            <div class="card_inner">
+                                                <div class="card_front">
+                                                    <div class="card_stat_container reu">{{ cell['reu'] }}</div>
+                                                    <div class="card_stat_container attack">{{ cell['att'] }}</div>
+                                                    <div class="card_image">
+                                                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ cell['image'] }}">
+                                                    </div>
+                                                    <div class="mana_circle">{{ cell['mana'] }}</div>
+                                                    <div class="card_name">{{ cell['name'] }}</div>
+                                                    <div class="hp_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-cell"></div>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -279,13 +286,6 @@
         <script>
             // ==========================================================
             // UTILITY: get closest card element
-            // ... (script remains unchanged) ...
-            // ==========================================================
-            // (Je n'ai pas modifié la logique JS principale – j'ai juste laissé ton code ci-dessous tel quel.)
-            // === Copie exacte du script original (inchangé) ===
-
-            // ==========================================================
-            // UTILITY: get closest card element
             // ==========================================================
             function getCardRoot(elem) {
                 return elem.closest(".card");
@@ -327,7 +327,6 @@
 
                 const team_prefix = team === 1 ? "p1" : "p2";
 
-                // Read values from the cell dataset
                 const fireball = cell.dataset.fireball ?? 0;
                 const heal = cell.dataset.heal ?? 0;
                 const armageddon = cell.dataset.armageddon ?? 0;
@@ -356,6 +355,7 @@
                     }
                 });
             }
+
             // ==========================================================
             // STATE VARIABLES
             // ==========================================================
@@ -370,7 +370,7 @@
             const currentPlayer = parseInt(document.querySelector(".grid-container").dataset.turn);
 
             // ==========================================================
-            // DECK CARD SELECTION  (unchanged)
+            // DECK CARD SELECTION
             // ==========================================================
             document.querySelectorAll(".deck-checkbox").forEach(cb => {
                 cb.addEventListener("change", function () {
@@ -400,7 +400,7 @@
             });
 
             // ==========================================================
-            // ABILITY SELECTION — now happens AFTER choosing actor
+            // ABILITY SELECTION
             // ==========================================================
             document.querySelectorAll(".armory_checkbox").forEach(ab => {
                 ab.addEventListener("change", function () {
@@ -431,10 +431,17 @@
             });
 
             // ==========================================================
-            // GRID CLICK HANDLER - PLACEMENT  (unchanged)
+            // GRID CLICK HANDLER - PLACEMENT
             // ==========================================================
             document.querySelectorAll(".cell-morpion").forEach(cell => {
-                cell.addEventListener("click", function () {
+                cell.addEventListener("click", function (ev) {
+                    // BLOCK ARMAGEDDON CELLS
+                    if (cell.classList.contains("armageddon-locked")) {
+                        ev.stopPropagation();
+                        alert("This cell is destroyed by Armageddon! You cannot place here.");
+                        return;
+                    }
+
                     if (!chosenAbility) {
                         if (!selectedCardId) return;
                         if (cell.querySelector(".card")) {
@@ -452,13 +459,21 @@
             });
 
             // ==========================================================
-            // GRID CLICK HANDLER - ACTOR → THEN ABILITY → THEN TARGET
+            // GRID CLICK HANDLER - ACTOR → ABILITY → TARGET
             // ==========================================================
             document.querySelectorAll(".cell-morpion .card").forEach(card => {
                 card.addEventListener("click", function (ev) {
                     ev.stopPropagation(); // avoid double click events (cell + card)
-                    
+
                     const cell = card.closest(".cell-morpion");
+
+                    // BLOCK ARMAGEDDON CELLS
+                    if (cell.classList.contains("armageddon-locked")) {
+                        ev.stopPropagation();
+                        alert("This card is destroyed by Armageddon! Cannot select it.");
+                        return;
+                    }
+
                     const clickedTeam = parseInt(cell.dataset.team);
 
                     if (waitingForActor) {
@@ -509,8 +524,14 @@
                 });
             });
 
+            // ==========================================================
+            // GRID CELL HIGHLIGHTING
+            // ==========================================================
             document.querySelectorAll(".cell-morpion").forEach(cell => {
                 cell.addEventListener("click", function () {
+
+                    // BLOCK ARMAGEDDON CELLS
+                    if (cell.classList.contains("armageddon-locked")) return;
 
                     const team = parseInt(this.dataset.team || 0);
 

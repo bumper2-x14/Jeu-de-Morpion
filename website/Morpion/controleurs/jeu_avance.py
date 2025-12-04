@@ -27,7 +27,7 @@ def create_equipe_list(equipe_data):
 
 def roll_success(reu_points):
     """Retourne True si l’action réussit selon les points de réussite"""
-    chance = reu_points * 10
+    chance = reu_points * 20
     return random.randint(0, 100) < chance
 
 def reward_success(morpion_data):
@@ -508,6 +508,11 @@ if POST and POST.get('action_type', [None])[0] == 'ability':
     acting_card_id = POST.get('acting_card', [None])[0]
     ability_name = POST.get('ability', [None])[0]
     ability_target_id = POST.get('ability_target', [None])[0]
+    armageddon_targets = []
+    if 'armageddon_targets' not in SESSION:
+        SESSION['armageddon_target'] = []
+    else:
+        armageddon_targets = SESSION['armageddon_target']    
 
     print(f"[DEBUG] ABILITY action: actor={acting_card_id}, ability={ability_name}, target={ability_target_id}")
 
@@ -561,6 +566,9 @@ if POST and POST.get('action_type', [None])[0] == 'ability':
 
                     elif ability_name == 'armageddon':
                         action_result = cast_armageddon(actor_cell, board, target_index)
+                        if action_result == "destroyed":
+                           armageddon_targets.append(target_index)
+                           SESSION['armageddon_target'] = armageddon_targets
                         print(f"[DEBUG] Résultat armageddon: {action_result}")
 
                     else:

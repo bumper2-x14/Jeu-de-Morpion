@@ -129,6 +129,30 @@ body {
 }
 
 /*====================================================*/
+/* ARMAGEDDON IMAGE */
+/*====================================================*/
+
+.armageddon-effect {
+    position: absolute;
+    inset: 0;                /* fills full cell */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;   /* allows clicks to pass through */
+    z-index: 5;             /* above card/empty cell */
+}
+
+.armageddon-effect img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;    /* keeps proportions without distortion */
+    pointer-events: none;
+}
+
+
+/*====================================================*/
 /* MORPION TEXT */
 /*====================================================*/
 
