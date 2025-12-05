@@ -162,6 +162,10 @@ def create_equipe(connexion, eq_name, eq_color, eq_morpions, nb_morpions):
 
 
 def delete_equipe(connexion, eq_id):
+    query_partie_a = """
+        DELETE FROM partie WHERE equipe1_id = %s OR equipe2_id = %s
+    """
+    
     query_eq_morp = """
         DELETE FROM equipe_morpion WHERE equipe_id = %s
     """
@@ -170,8 +174,19 @@ def delete_equipe(connexion, eq_id):
         DELETE FROM equipe WHERE id = %s
     """
 
-    return delete_query(connexion, query_eq_morp, [eq_id]) and delete_query(connexion, query_eq, [eq_id])
+    success_partie = delete_query(connexion, query_partie_a, [eq_id, eq_id])
+    
+    if not success_partie:
+        return False 
 
+    success_morp = delete_query(connexion, query_eq_morp, [eq_id])
+
+    if not success_morp:
+        return False
+
+    success_eq = delete_query(connexion, query_eq, [eq_id])
+
+    return success_eq
 
 
 def insert_to_config(connexion, grid_size, max_turn):
@@ -313,6 +328,34 @@ def game_duration(connexion, prt_id):
         duration = end_time - start_time
         return duration
     return None
+
+def get_min_max_duration_game(connexion):
+    query = """
+        SELECT 
+        p_min.min_duration,
+        e1_min.name AS team1_min,
+        e2_min.name AS team2_min,
+        p_max.max_duration,
+        e1_max.name AS team1_max,
+        e2_max.name AS team2_max
+    FROM
+        (SELECT id, equipe1_id, equipe2_id, end_time - start_time AS min_duration
+        FROM partie
+        WHERE end_time IS NOT NULL
+        ORDER BY min_duration ASC
+        LIMIT 1) AS p_min
+    JOIN equipe e1_min ON e1_min.id = p_min.equipe1_id
+    JOIN equipe e2_min ON e2_min.id = p_min.equipe2_id,
+        (SELECT id, equipe1_id, equipe2_id, end_time - start_time AS max_duration
+        FROM partie
+        WHERE end_time IS NOT NULL
+        ORDER BY max_duration DESC
+        LIMIT 1) AS p_max
+    JOIN equipe e1_max ON e1_max.id = p_max.equipe1_id
+    JOIN equipe e2_max ON e2_max.id = p_max.equipe2_id;
+    """
+    return select_query(connexion, query)
+
 
 
 def get_top_3_teams(connexion):

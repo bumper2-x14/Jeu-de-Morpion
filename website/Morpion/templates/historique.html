@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block main_block %}
-    <h3> Historique des jeu: </h3><br>
+    <h3 class="hist_main_title"> Historique des jeux </h3>
     <div class="hist_section">
         <ul>
             {% for t in REQUEST_VARS['historique'] %}
-              <li class="hist_item">
-                <span style="{% if t[0] == t[2] %}color: green; font-weight: bold;{% endif %}">
+              <li>
+                <span class="team-name {% if t[0] == t[2] %}winner-team{% endif %}">
                     {{ t[0] }}
                 </span>
-                vs
-                <span style="{% if t[1] == t[2] %}color: green; font-weight: bold;{% endif %}">
+                <span class="vs-separator"> vs </span>
+                <span class="team-name {% if t[1] == t[2] %}winner-team{% endif %}">
                     {{ t[1] }}
                 </span>
             </li>  

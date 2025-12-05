@@ -1,33 +1,61 @@
- {% extends "base.html" %}
+{% extends "base.html" %}
 
- {% block main_block %}
- <div class="accueil-principale">
-    <h2> Bienvenue sur le champ de bataille du morpion ! Que le meilleur gagne. </h2>
+{% block main_block %}
+<div class="accueil-principale">
+    <h2>⚔️ Bienvenue sur le champ de bataille du morpion ! 🏆</h2>
+
     <div class="accueil-morpion">
-        
-
-        <p>  
-            Sur ce site, vous pouvez jouer au jeu du morpion en deux modes: 
-        </p>
-
+        <h3>Choisissez votre mode de jeu</h3>
+        <p>Affrontez-vous dans l'une de nos deux versions du jeu :</p>
         <ul>
-            <li><a href="config_classique"><strong>Mode classique </strong> </a> </li><br>
-            <li><a href="config_avance"><strong>Mode avancé </strong></a></li>
+            <li>
+                <a href="config_classique">
+                    <strong>Mode Classique</strong>
+                </a>
+            </li>
+            <li>
+                <a href="config_avance">
+                    <strong>Mode Avancé</strong>
+                </a>
+            </li>
         </ul>
-        
     </div>
-    
-    <h3> nombre d'instance de la table </h3>
-    <p>    morpion:  {{ REQUEST_VARS['nb_morpion'][0][0] }}<br>
-        equipe:  {{ REQUEST_VARS['nb_equipe'][0][0] }}<br>
-        partie:  {{ REQUEST_VARS['nb_partie'][0][0] }}
-    </p>
 
-    <h3>Top-3 des équipes avec le plus de victoires</h3>
-    <ol>
-    {% for row in REQUEST_VARS['top3_teams'] %}
-        <li>{{ row[0] }} — {{ row[1] }} victoires</li>
-    {% endfor %}
-    </ol>
-</div>    
+    <div class="stats-container">
+
+        <div class="stat-card">
+            <h3>📈 Statistiques Générales</h3>
+            <p>
+                Morpions créés : <span class="stat-highlight">{{ REQUEST_VARS['nb_morpion'][0][0] }}</span><br>
+                Équipes enregistrées : <span class="stat-highlight">{{ REQUEST_VARS['nb_equipe'][0][0] }}</span><br>
+                Parties jouées : <span class="stat-highlight">{{ REQUEST_VARS['nb_partie'][0][0] }}</span>
+            </p>
+        </div>
+
+        <div class="stat-card">
+            <h3>👑 Top-3 des Équipes</h3>
+            <ol class="top-3-list">
+            {% for row in REQUEST_VARS['top3_teams'] %}
+                <li>
+                    <span>{{ row[0] }}</span>
+                    <span class="stat-highlight">{{ row[1] }} victoires</span>
+                </li>
+            {% endfor %}
+            </ol>
+        </div>
+
+        <div class="stat-card">
+            <h3>⏱️ Durée des Parties</h3>
+            <p>
+                Partie la plus courte : <span class="stat-highlight">{{ REQUEST_VARS['min_dur'] }}</span>
+                <span class="duration-info">({{ REQUEST_VARS['min_team1'] }} vs {{ REQUEST_VARS['min_team2'] }})</span>
+            </p>
+            <br>
+            <p>
+                Partie la plus longue : <span class="stat-highlight">{{ REQUEST_VARS['max_dur'] }}</span>
+                <span class="duration-info">({{ REQUEST_VARS['max_team1'] }} vs {{ REQUEST_VARS['max_team2'] }})</span>
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}
