@@ -87,20 +87,38 @@ def delete_query(connexion, query, param=[]):
             logger.error("DELETE échoué : %s", err)
             return False
 
+#===========================================================
+# ===============   FONCTIONS SPÉCIFIQUES   =================
+#===========================================================
 
-# ------------------------------------------------------------
-# RÉCUPÉRATION DES ENREGISTREMENTS D’UNE TABLE
-# ------------------------------------------------------------
-# Cette fonction récupère toutes les lignes d'une table donnée.
-# - connexion : objet de connexion à la base
-# - nom_table : nom de la table dont on veut les données
-# Retourne : le résultat du SELECT (liste de tuples) ou None.
+
 def get_instances(connexion, table_name):
+    """
+    Récupère toutes les lignes d'une table.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - table_name: nom de la table (string)
+
+    Retour:
+      - liste de tuples avec les lignes, ou None.
+    """
     query = sql.SQL('SELECT * FROM {tab}').format(tab=sql.Identifier(table_name))
     return select_query(connexion, query)
 
 
 def get_instances_by_id(connexion, table_name, id):
+    """
+    Récupère les lignes d'une table correspondant à un id donné.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - table_name: nom de la table
+      - id: identifiant recherché
+
+    Retour:
+      - liste de tuples correspondant à l'id, ou None.
+    """
     query = sql.SQL("SELECT * FROM {table} WHERE id = %s").format(
         table=sql.Identifier(table_name)
     )
@@ -108,6 +126,17 @@ def get_instances_by_id(connexion, table_name, id):
 
 
 def get_column(connexion, table_name, att_name):
+    """
+    Récupère une colonne spécifique pour toutes les lignes d'une table.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - table_name: nom de la table
+      - att_name: nom de la colonne à récupérer
+
+    Retour:
+      - liste des valeurs de la colonne (une par ligne), ou None.
+    """
     query = sql.SQL('SELECT {att} FROM {tab}').format(
         att=sql.Identifier(att_name),
         tab=sql.Identifier(table_name)
@@ -118,6 +147,16 @@ def get_column(connexion, table_name, att_name):
     
 
 def get_equipe_details(connexion, eq_id):
+    """
+    Récupère les détails (morpions) d'une équipe.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - eq_id: identifiant de l'équipe
+
+    Retour:
+      - liste de tuples (name, image, hp, attack, mana, skill, id) pour chaque morpion.
+    """
     query = """
         SELECT m.name, m.image, m.hp, m.attack, m.mana, m.skill, m.id
         FROM equipe e
@@ -129,6 +168,16 @@ def get_equipe_details(connexion, eq_id):
 
 
 def get_equipe_name_color(connexion, eq_id):
+    """
+    Récupère le nom et la couleur d'une équipe.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - eq_id: identifiant de l'équipe
+
+    Retour:
+      - liste de tuples (name, color, id).
+    """
     query = """
             SELECT name, color, id from equipe WHERE id = %s    
         """
@@ -136,6 +185,19 @@ def get_equipe_name_color(connexion, eq_id):
 
 
 def create_equipe(connexion, eq_name, eq_color, eq_morpions, nb_morpions):
+    """
+    Crée une nouvelle équipe et associe des morpions à cette équipe.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - eq_name: nom de l'équipe
+      - eq_color: couleur de l'équipe
+      - eq_morpions: itérable d'IDs de morpions à associer
+      - nb_morpions: nombre de morpions à insérer
+
+    Retour:
+      - id de l'équipe créée (via RETURNING) ou None si échec.
+    """
     insert_eq_query = """
         INSERT INTO equipe (name, color)
         VALUES (%s, %s)
@@ -162,34 +224,47 @@ def create_equipe(connexion, eq_name, eq_color, eq_morpions, nb_morpions):
 
 
 def delete_equipe(connexion, eq_id):
+    """
+    Supprime une équipe et ses références (parties et associations morpions).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - eq_id: identifiant de l'équipe à supprimer
+
+    Retour:
+      - True si toutes les suppressions ont réussi, False sinon.
+    """
     query_partie_a = """
         DELETE FROM partie WHERE equipe1_id = %s OR equipe2_id = %s
     """
-    
     query_eq_morp = """
         DELETE FROM equipe_morpion WHERE equipe_id = %s
     """
-
     query_eq = """ 
         DELETE FROM equipe WHERE id = %s
     """
-
     success_partie = delete_query(connexion, query_partie_a, [eq_id, eq_id])
-    
     if not success_partie:
         return False 
-
     success_morp = delete_query(connexion, query_eq_morp, [eq_id])
-
     if not success_morp:
         return False
-
     success_eq = delete_query(connexion, query_eq, [eq_id])
-
     return success_eq
 
 
 def insert_to_config(connexion, grid_size, max_turn):
+    """
+    Insère une nouvelle configuration (taille de grille et max tours).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - grid_size: taille de la grille
+      - max_turn: nombre maximal de tours
+
+    Retour:
+      - True si l'insertion a réussi, False sinon.
+    """
     query = sql.SQL("""
             INSERT INTO configuration (grid_size, max_turns)
             VALUES (%s, %s) 
@@ -199,6 +274,15 @@ def insert_to_config(connexion, grid_size, max_turn):
 
 
 def get_last_config(connexion):
+    """
+    Récupère la dernière configuration insérée (la plus récente).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+
+    Retour:
+      - dictionnaire avec id, grid_size et max_turns ou None.
+    """
     with connexion.cursor() as cursor:
         cursor.execute("""
             SELECT id, grid_size, max_turns
@@ -218,12 +302,34 @@ def get_last_config(connexion):
     }   
 
 def get_nb_instances(connexion, table_name):
+    """
+    Compte le nombre d'instances (lignes) d'une table.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - table_name: nom de la table
+
+    Retour:
+      - résultat du SELECT COUNT, ou None.
+    """
     query = sql.SQL("SELECT COUNT(id) FROM {tab}").format(tab=sql.Identifier(table_name)) 
     
     return select_query(connexion, query)
 
 
 def create_partie(connexion, grid_size, mx_turn, eq1_id, eq2_id):
+    """
+    Crée une nouvelle partie (configuration + entrée partie).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - grid_size: taille de la grille
+      - mx_turn: nombre maximal de tours
+      - eq1_id, eq2_id: identifiants des équipes participantes
+
+    Retour:
+      - id de la partie créée, ou None si échec.
+    """
     config_query = sql.SQL("""
             INSERT INTO configuration (grid_size, max_turns)
             VALUES (%s, %s)
@@ -250,20 +356,51 @@ def create_partie(connexion, grid_size, mx_turn, eq1_id, eq2_id):
             return None
     
 def delete_partie(connexion, prt_id):
+    """
+    Supprime une partie et ses dépendances (journal, configuration).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - prt_id: identifiant de la partie à supprimer
+
+    Retour:
+      - True si toutes les suppressions ont réussi, False sinon.
+    """
     query_config = """
         DELETE FROM configuration
         WHERE id = (
             SELECT config_id FROM partie WHERE id = %s
         )
     """
-
+    query_journal = """
+        DELETE FROM journal WHERE partie_id = %s
+    """
     query_partie = """ 
         DELETE FROM partie WHERE id = %s
     """
-    return delete_query(connexion, query_partie, [prt_id]) and delete_query(connexion, query_config, [prt_id])
+    success_journal = delete_query(connexion, query_journal, [prt_id])
+    if not success_journal:
+        return False
+    success_partie = delete_query(connexion, query_partie, [prt_id])
+    if not success_partie:
+        return False
+    success_config = delete_query(connexion, query_config, [prt_id])
+    return success_config   
 
 
 def update_partie_winner(connexion, prt_id, winner_id, max_turns_reached=False):
+    """
+    Met à jour l'entrée 'partie' pour enregistrer le gagnant et la date de fin.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - prt_id: id de la partie
+      - winner_id: id de l'équipe gagnante
+      - max_turns_reached: bool si la partie s'est terminée par max tours
+
+    Retour:
+      - True si la mise à jour a réussi, False sinon.
+    """
     query= sql.SQL("""
         UPDATE partie
         SET winning_equipe_id = %s,
@@ -275,8 +412,17 @@ def update_partie_winner(connexion, prt_id, winner_id, max_turns_reached=False):
         
 
 def get_game_hist(connexion):
+    """
+    Récupère l'historique de parties (équipes et gagnants).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+
+    Retour:
+      - liste de tuples décrivant les parties et le gagnant.
+    """
     query="""
-    SELECT e1.name AS name1, e2.name AS name2, ew.name as winner
+    SELECT e1.name AS name1, e2.name AS name2, ew.name as winner, p.id AS partie_id
     FROM partie p
     JOIN equipe e1 ON p.equipe1_id = e1.id
     JOIN equipe e2 ON p.equipe2_id = e2.id
@@ -286,27 +432,59 @@ def get_game_hist(connexion):
 
 
 def get_team_hist(connexion, eq_id):
+    """
+    Récupère l'historique des parties pour une équipe donnée.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - eq_id: identifiant de l'équipe
+
+    Retour:
+      - liste de tuples avec les informations de parties impliquant l'équipe.
+    """
     query="""
     SELECT 
     e1.name AS name1, e1.id AS id1,
     e2.name AS name2, e2.id AS id2,
-    ew.name as winner, start_time  
+    ew.name as winner, start_time, p.id AS partie_id 
     FROM partie p
     JOIN equipe e1 ON p.equipe1_id = e1.id
     JOIN equipe e2 ON p.equipe2_id = e2.id
     JOIN equipe ew ON p.winning_equipe_id = ew.id
-    WHERE e1.id=%s OR e2.id=%s
+    WHERE e1.id=%s OR e2.id=%s  
     """
     return select_query(connexion, query, [eq_id, eq_id])
 
 
 def insert_into_journal(connexion, partie_id, seq, text):
+    """
+    Insère une ligne dans le journal d'une partie.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - partie_id: identifiant de la partie
+      - seq: numéro de séquence/ordre de l'entrée
+      - text: texte à insérer dans le journal
+
+    Retour:
+      - True si l'insertion a réussi, False sinon.
+    """
     query= sql.SQL("""INSERT INTO journal(partie_id, seq, text)
                    values(%s,%s,%s)""")
     return insert_query(connexion, query, [partie_id, seq, text])
 
 
-def get_journal_by_id(connexion, prt_id):
+def get_journal_by_prt_id(connexion, prt_id):
+    """
+    Récupère toutes les entrées du journal pour une partie donnée.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - prt_id: identifiant de la partie
+
+    Retour:
+      - liste de tuples (seq, text) ou None.
+    """
     query="""
     SELECT seq, text
     FROM journal 
@@ -315,7 +493,18 @@ def get_journal_by_id(connexion, prt_id):
     return select_query(connexion, query,[prt_id])  
 
 
+
 def game_duration(connexion, prt_id):
+    """
+    Calcule la durée d'une partie (end_time - start_time).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+      - prt_id: identifiant de la partie
+
+    Retour:
+      - timedelta de la durée si disponible, sinon None.
+    """
     query="""
     SELECT start_time, end_time
     FROM partie 
@@ -330,6 +519,15 @@ def game_duration(connexion, prt_id):
     return None
 
 def get_min_max_duration_game(connexion):
+    """
+    Récupère la partie la plus courte et la plus longue (durée).
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+
+    Retour:
+      - liste/tuple contenant informations sur les parties min/max.
+    """
     query = """
         SELECT 
         p_min.min_duration,
@@ -359,6 +557,15 @@ def get_min_max_duration_game(connexion):
 
 
 def get_top_3_teams(connexion):
+    """
+    Récupère les trois équipes ayant le plus de victoires.
+
+    Paramètres:
+      - connexion: objet de connexion psycopg
+
+    Retour:
+      - liste de tuples (team_name, wins) ordonnée par victoires décroissantes.
+    """
     query ="""
     SELECT e.name, COUNT(*) AS wins
     FROM partie p

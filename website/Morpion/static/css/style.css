@@ -70,14 +70,33 @@ header img {
 }
 
 footer {
-    text-align: center;
-    padding: 1em;
-    background: #1a1a1a;
-    color: #b89e67;
+    display: flex;                 
+    flex-wrap: wrap;               
+    justify-content: center;       
+    gap: 1em;                     
+    padding: 1.5em 1em;            
+    background-color: #1a1a1a;    
+    color: #d4b375;                
     font-size: 0.9em;
-    border-top: 1px solid #444;
+    border-top: 2px solid #444;    
     margin-top: auto;
 }
+
+footer a {
+    color: #d4b375;
+    text-decoration: none;
+    transition: color 0.3s ease;   
+}
+
+footer a:hover {
+    color: #fff;                   
+    text-decoration: underline;     
+}
+
+footer span {
+    display: inline-block;          
+}
+
 
 /* =========================================================== */
 /* SECTION 4 : ELEMENTS RÉUTILISABLES (boutons, inputs…)       */
@@ -254,7 +273,10 @@ input[type="color"] {
 
 .card_selectable input[type="checkbox"]:checked + .card {
     outline: 3px solid gold;
-    box-shadow: 0 0 10px gold;
+    box-shadow: 0 0 30px black;
+    outline-offset: 2px;
+    border-radius: 5px;
+
 }
 
 /* Responsive cartes */
@@ -537,7 +559,7 @@ legend {
 
 
 /* =========================================================== */
-/* SECTION 11 : PAGE MORPION (vrai Tic-Tac-Toe bonus)          */
+/* SECTION 11 : PAGE MORPION           */
 /* =========================================================== */
 .morpion-header {
     margin: 20px auto;
@@ -567,10 +589,10 @@ legend {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 0 20px auto;
     position: absolute;
-    top: 150px;
+    top: 310px;
     right: 20PX;
 }
 
@@ -672,6 +694,7 @@ legend {
     .equipe_list .flag { margin-left: 0; margin-top: 8px; }
 }
 
+
 /* =========================================================== */
 /* SECTION 13 : ACCUEIL & MENU                                 */
 /* =========================================================== */
@@ -712,14 +735,6 @@ nav li a:hover {
     color: #1a1a1a;
 }
 
-@media (max-width: 600px) {
-    nav {
-        position: relative;
-        width: 100%;
-        height: auto;
-    }
-    main { margin-left: 0; }
-}
 
 .accueil-principale{
      text-align: center;
@@ -861,18 +876,10 @@ nav li a:hover {
     font-size: 1.1em;
 }
 
-@media (max-width: 768px) {
-    .stat-card {
-        flex-basis: 100%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
 
 /* =========================================================== */
 /* SECTION 14 : HISTORIQUE                                     */
 /* =========================================================== */
-
 .hist_main_title {
     text-align: center;
     color: #f5deb3;
@@ -886,9 +893,9 @@ nav li a:hover {
 .hist_section{
     display: flex;
     justify-content: center;
-    max-height: 60vh; 
+    max-height: 60vh;
     overflow-y: auto; 
-    padding: 0px 20px; 
+    padding: 10px; 
     border: 2px solid #b89e67; 
     border-radius: 12px;
     background: rgba(15, 15, 15, 0.7); 
@@ -914,7 +921,7 @@ nav li a:hover {
     padding: 15px 20px;
     margin: 12px 0;
     border-radius: 10px;
-    border-left: 6px solid #b89e67;
+    border-left: 6px solid #d1a023; /* Changé à l'or pour l'uniformité */
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
@@ -946,31 +953,191 @@ nav li a:hover {
     text-shadow: 0 0 5px rgba(209, 160, 35, 0.6);
 }
 
-
-.team_hist_section{
+/* Styles pour la page de Détail d'Équipe */
+.team-details-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: left;
+    gap: 30px;
+    padding: 20px;
+    margin: 20px auto;
 }
 
-.team_hist_section li{
-    width: 400px;
+.eq_name {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.eq_name h1 {
+    color: #d1a023;
+    font-size: 2.5em;
+    text-transform: uppercase;
+    border-bottom: 3px solid #b89e67;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.team_hist_section {
+    flex-basis: 650px; 
+    max-height: 50vh; 
+    overflow-y: auto;
+    padding: 15px;
+    border: 2px solid #b89e67;
+    border-radius: 10px;
+    background: rgba(30,30,40,0.8);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.team_hist_section h3 {
+    text-align: center;
+    color: #f5deb3;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.team_hist_section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.team_hist_section li {
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #111;
+    background-color: #1a1a1a;
     color: wheat;
-    letter-spacing: 1px;
-    word-spacing: 5px;
-    padding: 5px;   
-    margin: 10px 0;
-    border-radius: 12px;
-    border-left: 5px solid #b89e67;
-    transition: all 0.3s ease;  
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border-left: 4px solid #b89e67;
+    font-size: 0.95em;
+    transition: background-color 0.2s;
 }
 
+.team_hist_section li:hover {
+    background-color: #2a2a2a;
+}
+
+.match-teams {
+    flex: 1; 
+    text-align: left;
+    min-width: 150px;
+}
+
+.match-separator {
+    margin: 0 8px;
+    color: #aaa;
+    font-weight: normal;
+}
+
+.match-winner {
+    min-width: 120px;
+    text-align: right;
+    font-size: 0.9em;
+    color: wheat;
+}
+
+.winner-name {
+    color: green;
+    font-weight: bold;
+}
+
+.match-time {
+    color: #d1a023;
+    font-size: 0.85em;
+    min-width: 60px;
+    text-align: right;
+}
+
+.eq_deck {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px;
+}
+
+@media (max-width: 850px) {
+    .team-details-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .team_hist_section {
+        max-height: 40vh;
+        width: 90%;
+        max-width: 450px;
+    }
+    .eq_deck {
+        width: 100%;
+    }
+}
 
 /* =========================================================== */
-/* SECTION 15 : UTILITAIRES                                    */
+/* SECTION 15 : PAGE JOURNAL                                     */
+/* =========================================================== */   
+.journal_main_title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #d1a023; /* Or/Gold */
+}
+
+.journal_section {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 15px;
+    /* Styles pour la boîte défilante */
+    max-height: 65vh; 
+    overflow-y: auto;
+    
+    background: rgba(30,30,40,0.9); /* Fond sombre légèrement transparent */
+    border: 2px solid #b89e67; /* Bordure Or/Blé */
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.journal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.journal-item {
+    display: flex; /* Permet un bon alignement entre l'index et le texte */
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    
+    border-left: 4px solid #d1a023; /* Barre latérale dorée */
+    background-color: #1a1a1a; /* Fond très sombre pour l'entrée */
+    color: wheat;
+    border-radius: 5px;
+    transition: background 0.3s, border-color 0.3s;
+    font-size: 0.95em;
+}
+
+.journal-item:hover {
+    background-color: #2a2a2a;
+    border-color: #f5deb3; /* Lighter gold on hover */
+}
+
+.journal-index {
+    font-weight: bold;
+    margin-right: 10px;
+    color: #b89e67; /* Or plus subtil pour l'index */
+    flex-shrink: 0; 
+}
+
+.journal-text {
+    color: wheat; /* Couleur de texte clair */
+}   
+
+/* =========================================================== */
+/* SECTION 16 : UTILITAIRES                                    */
 /* =========================================================== */
 
 

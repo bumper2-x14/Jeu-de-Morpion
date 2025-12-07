@@ -12,6 +12,9 @@
                 <span class="team-name {% if t[1] == t[2] %}winner-team{% endif %}">
                     {{ t[1] }}
                 </span>
+                 <span class="journal_link">
+                    <a href="/journal?team_journal_id={{ t[3] }}">📜</a>
+                </span>
             </li>  
             {% endfor %}
         </ul>

@@ -65,14 +65,14 @@ INSERT INTO morpion (name, image, hp, attack, mana, skill) VALUES
 ('Frostine', 't5.png', 4, 3, 4, 4),
 ('Shadowen', 't6.png', 3, 5, 4, 3),
 ('Lumina', 't7.png', 4, 3, 5, 3),
-('Venorax', 't8.png', 4, 4, 3, 4),
-('Pyrax', 't9.png', 3, 4, 4, 4),
+('Venorax', 't8.png', 4, 4, 5, 4),
+('Pyrax', 't9.png', 3, 4, 6, 4),
 ('Mystleaf', 't10.png', 4, 3, 4, 4),
 ('Blazefang', 't11.png', 4, 4, 3, 4),
 ('Aqualis', 't12.png', 3, 5, 4, 3),
 ('Terrafin', 't13.png', 3, 4, 4, 4),
 ('Voltis', 't14.png', 5, 3, 4, 3),
-('Frostwing', 't15.png', 4, 3, 4, 4),
+('Frostwing', 't15.png', 4, 3, 5, 4),
 ('Shadowclaw', 't16.png', 3, 5, 3, 4);
 
 INSERT INTO equipe (name, color, creation_date) VALUES

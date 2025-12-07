@@ -9,7 +9,7 @@
         <link type="text/css" rel="stylesheet" href="{{ SESSION['DIRECTORY'] }}/static/css/style_av.css">
         <link rel="shortcut icon" type="image/x-icon" href="{{ SESSION['DIRECTORY'] }}/static/img/icon.png" />
         <title>{{ SESSION['APP'] }} - {{ SESSION['BASELINE'] }}</title>
-        {% if REQUEST_VARS['end_non_submit'] or REQUEST_VARS['end_submit'] %}
+        {% if REQUEST_VARS['end_non_submit'] or REQUEST_VARS['end_submit'] or  REQUEST_VARS['leave_game'] %}
             <meta http-equiv="refresh" content="0; url='/'">
         {% endif %}
     </head>
@@ -19,7 +19,7 @@
         <form method="POST" action="jeu_avance" id="game_form">
 
             {% if SESSION.get('current_game_id') %}
-
+                <!--Donnes envoyes par JS-->
                 <input type="hidden" name="game_id" value="{{ SESSION['current_game_id'] }}">
 
                 <input type="hidden" name="action_type" id="action_type"> 
@@ -35,6 +35,8 @@
                 <input type="hidden" name="end_time" id="end_time" value="">
                 <input type="hidden" name="winning_equipe_id" id="winning_equipe_id" value="{{ REQUEST_VARS['winning_team'] if 'winning_team' in REQUEST_VARS else '' }}">
                 <input type="hidden" name="max_turn_reached" id="max_turn_reached" value="{% if SESSION['turn_count'] >= SESSION['max_turn_av'] %}1{% else %}0{% endif %}">
+                
+                <!--================================================================================-->
                 <div class="p1_box">
                     <div class="deck_player1">
                         <div class="game_card">
@@ -100,6 +102,7 @@
                     </div>
                 </div>
 
+                <!--================================================================================-->
                 <div class="p2_box">
                     <div class="deck_player2">
                         <div class="game_card">
@@ -165,6 +168,8 @@
                     </div>
                 </div>
 
+                <!--================================================================================-->
+
                 <div id="action_description" class="action-description">
                     {% if 'journal_txt' in REQUEST_VARS %}
                         <p>{{ REQUEST_VARS['journal_txt'] }}</p>
@@ -172,6 +177,8 @@
                         <p>Pas d'action pour le moment</p>
                     {% endif %}
                 </div>
+
+                <!--================================================================================-->
 
                 <div class="game_center">
                     <div class="grid-container" data-turn="{% if SESSION['p1_turn'] %}1{% else %}2{% endif %}" style="--grid-size: {{ SESSION['grid_size'] }};">
@@ -207,7 +214,7 @@
                                                     </div>
                                                     <div class="mana_circle">{{ cell['mana'] }}</div>
                                                     <div class="card_name">{{ cell['name'] }}</div>
-                                                    <div class="hp_bar"><div class="stat_bar_fill hp_fill"></div></div>
+                                                    <div class="hp_bar"><div class="hp_fill" style="--hp-current: {{ cell['pv'] }}; --hp-max: {{ cell['hp_max'] }};"></div></div>
                                                     </div>
                                             </div>
                                         </div>
@@ -221,18 +228,33 @@
                     </div>
                 </div>
 
-                <div id="turn_tracker" class="turn-tracker">
-                    <div class="teams-row">
-                        <span class="team-name {% if SESSION['p1_turn'] %}active{% endif %}" style="--team-color: {{ SESSION['eq1_name_col'][0][1] if 'eq1_name_col' in SESSION else '#d1a023' }};">
-                            {{ SESSION['eq1_name_col'][0][0] if 'eq1_name_col' in SESSION else 'Equipe 1' }}
-                        </span>
-                        <span class="vs"> — </span>
-                        <span class="team-name {% if SESSION['p2_turn'] %}active{% endif %}" style="--team-color: {{ SESSION['eq2_name_col'][0][1] if 'eq2_name_col' in SESSION else '#d1a023' }};">
-                            {{ SESSION['eq2_name_col'][0][0] if 'eq2_name_col' in SESSION else 'Equipe 2' }}
-                        </span>
+                <div class="turn-tracker-box">
+                    <div id="turn_tracker" class="turn-tracker">
+                        <div class="teams-row">
+                            <span class="team-name {% if SESSION['p1_turn'] %}active{% endif %}"
+                                style="--team-color: {{ SESSION['eq1_name_col'][0][1] if 'eq1_name_col' in SESSION else '#d1a023' }};">
+                                {{ SESSION['eq1_name_col'][0][0] if 'eq1_name_col' in SESSION else 'Equipe 1' }}
+                            </span>
+
+                            <span class="vs"> — </span>
+
+                            <span class="team-name {% if SESSION['p2_turn'] %}active{% endif %}"
+                                style="--team-color: {{ SESSION['eq2_name_col'][0][1] if 'eq2_name_col' in SESSION else '#d1a023' }};">
+                                {{ SESSION['eq2_name_col'][0][0] if 'eq2_name_col' in SESSION else 'Equipe 2' }}
+                            </span>
+                        </div>
+
+                        <p class="turn-count">
+                            Tour : <span id="current_turn">{{ SESSION['turn_count'] }}</span> / {{ SESSION['max_turn_av'] }}
+                        </p>
                     </div>
-                    <p class="turn-count">Tour : <span id="current_turn">{{ SESSION['turn_count'] }}</span> / {{ SESSION['max_turn_av'] }}</p>
+
+                    <div class="game_exit">
+                        <button type="submit" name="leave_game" value="1" class="btn">Quitter</button>
+                    </div>
                 </div>
+
+                <!--================================================================================-->
 
                 {% if REQUEST_VARS.get('game_over') %}
                 <div class="modal-overlay" role="dialog" aria-modal="true">
@@ -284,275 +306,6 @@
                 {% endif %}
             {% endif %}
         </form>
-
-       <script>
-            // ==========================================================
-            // UTILITY: get closest card element
-            // ==========================================================
-            function getCardRoot(elem) {
-                return elem.closest(".card");
-            }
-
-            // ==========================================================
-            // UPDATE ARMORY BARS
-            // ==========================================================
-            function updateDeckArmoryBars(cardElem) {
-                if (!cardElem) return;
-
-                const inputElem = cardElem.closest("label")?.querySelector("input.deck-checkbox");
-                if (!inputElem) return;
-
-                const team = parseInt(inputElem.dataset.team);
-                const team_prefix = team === 1 ? "p1" : "p2";
-
-                const fireball = cardElem.dataset.fireball ?? 0;
-                const heal = cardElem.dataset.heal ?? 0;
-                const armageddon = cardElem.dataset.armageddon ?? 0;
-
-                const f = document.getElementById(team_prefix + "_fireball_bar");
-                const h = document.getElementById(team_prefix + "_heal_bar");
-                const a = document.getElementById(team_prefix + "_armageddon_bar");
-
-                if (f) f.style.setProperty('--fireball-percent', fireball + "%");
-                if (h) h.style.setProperty('--heal-percent', heal + "%");
-                if (a) a.style.setProperty('--armageddon-percent', armageddon + "%");
-            }
-
-            function updateGridArmoryBars(cardElem) {
-                if (!cardElem) return;
-
-                const cell = cardElem.closest(".cell-morpion");
-                if (!cell) return;
-
-                const team = parseInt(cell.dataset.team);
-                if (!team) return;
-
-                const team_prefix = team === 1 ? "p1" : "p2";
-
-                const fireball = cell.dataset.fireball ?? 0;
-                const heal = cell.dataset.heal ?? 0;
-                const armageddon = cell.dataset.armageddon ?? 0;
-
-                const f = document.getElementById(team_prefix + "_fireball_bar");
-                const h = document.getElementById(team_prefix + "_heal_bar");
-                const a = document.getElementById(team_prefix + "_armageddon_bar");
-
-                if (f) f.style.setProperty('--fireball-percent', fireball + "%");
-                if (h) h.style.setProperty('--heal-percent', heal + "%");
-                if (a) a.style.setProperty('--armageddon-percent', armageddon + "%");
-            }
-
-            function clearArmoryBars() {
-                const bars = [
-                    "p1_fireball_bar", "p1_heal_bar", "p1_armageddon_bar",
-                    "p2_fireball_bar", "p2_heal_bar", "p2_armageddon_bar"
-                ];
-
-                bars.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.style.setProperty("--fireball-percent", "0%");
-                        el.style.setProperty("--heal-percent", "0%");
-                        el.style.setProperty("--armageddon-percent", "0%");
-                    }
-                });
-            }
-
-            // ==========================================================
-            // STATE VARIABLES
-            // ==========================================================
-            let selectedCardId = null;
-            let chosenAbility = null;
-            let actingCard = null;
-
-            let waitingForActor = true;      // FIRST: choose actor
-            let waitingForAbility = false;   // SECOND: choose ability
-            let waitingForTarget = false;    // THIRD: choose target
-
-            const currentPlayer = parseInt(document.querySelector(".grid-container").dataset.turn);
-
-            // ==========================================================
-            // DECK CARD SELECTION
-            // ==========================================================
-            document.querySelectorAll(".deck-checkbox").forEach(cb => {
-                cb.addEventListener("change", function () {
-                    document.querySelectorAll(".deck-checkbox").forEach(c => {
-                        if (c !== cb) c.checked = false;
-                    });
-
-                    selectedCardId = cb.checked ? cb.value : null;
-
-                    const cardElem = cb.closest("label").querySelector(".card");
-                    if (cb.checked) {
-                        updateDeckArmoryBars(cardElem);
-                    } else {
-                        clearArmoryBars();
-                    }
-
-                    // reset ability flow
-                    chosenAbility = null;
-                    actingCard = null;
-
-                    waitingForActor = true;
-                    waitingForAbility = false;
-                    waitingForTarget = false;
-
-                    document.querySelectorAll(".armory_checkbox").forEach(a => a.checked = false);
-                });
-            });
-
-            // ==========================================================
-            // ABILITY SELECTION
-            // ==========================================================
-            document.querySelectorAll(".armory_checkbox").forEach(ab => {
-                ab.addEventListener("change", function () {
-                    document.querySelectorAll(".armory_checkbox").forEach(x => {
-                        if (x !== ab) x.checked = false;
-                    });
-
-                    chosenAbility = ab.checked ? ab.value : null;
-
-                    if (!chosenAbility) {
-                        waitingForAbility = false;
-                        waitingForTarget = false;
-                        return;
-                    }
-
-                    if (!actingCard) {
-                        alert("Select your acting card on the grid BEFORE choosing an ability.");
-                        ab.checked = false;
-                        chosenAbility = null;
-                        return;
-                    }
-
-                    waitingForAbility = false;
-                    waitingForTarget = true;
-
-                    alert("Ability selected: " + chosenAbility + "\nNow select the TARGET.");
-                });
-            });
-
-            // ==========================================================
-            // GRID CLICK HANDLER - PLACEMENT
-            // ==========================================================
-            document.querySelectorAll(".cell-morpion").forEach(cell => {
-                cell.addEventListener("click", function (ev) {
-                    // BLOCK ARMAGEDDON CELLS
-                    if (cell.classList.contains("armageddon-locked")) {
-                        ev.stopPropagation();
-                        alert("This cell is destroyed by Armageddon! You cannot place here.");
-                        return;
-                    }
-
-                    if (!chosenAbility) {
-                        if (!selectedCardId) return;
-                        if (cell.querySelector(".card")) {
-                            alert("Cell is already occupied!");
-                            return;
-                        }
-
-                        document.getElementById("action_type").value = "place";
-                        document.getElementById("selected_card").value = selectedCardId;
-                        document.getElementById("selected_move").value = cell.dataset.pos;
-
-                        document.getElementById("game_form").submit();
-                    }
-                });
-            });
-
-            // ==========================================================
-            // GRID CLICK HANDLER - ACTOR → ABILITY → TARGET
-            // ==========================================================
-            document.querySelectorAll(".cell-morpion .card").forEach(card => {
-                card.addEventListener("click", function (ev) {
-                    ev.stopPropagation(); // avoid double click events (cell + card)
-
-                    const cell = card.closest(".cell-morpion");
-
-                    // BLOCK ARMAGEDDON CELLS
-                    if (cell.classList.contains("armageddon-locked")) {
-                        ev.stopPropagation();
-                        alert("This card is destroyed by Armageddon! Cannot select it.");
-                        return;
-                    }
-
-                    const clickedTeam = parseInt(cell.dataset.team);
-
-                    if (waitingForActor) {
-                        if (clickedTeam !== currentPlayer) {
-                            alert("You can only select YOUR card as the actor!");
-                            return;
-                        }
-
-                        updateGridArmoryBars(card);
-
-                        actingCard = cell.dataset.id;
-                        waitingForActor = false;
-                        waitingForAbility = true;
-
-                        alert("Actor selected! Now choose an ability.");
-                        return;
-                    }
-
-                    if (waitingForAbility) {
-                        alert("Choose an ability from the armory before selecting a target.");
-                        return;
-                    }
-
-                    if (waitingForTarget) {
-
-                        if (chosenAbility !== "heal" && clickedTeam === currentPlayer) {
-                            alert("This ability cannot target your own cards!");
-                            return;
-                        }
-
-                        document.getElementById("action_type").value = "ability";
-                        document.getElementById("acting_card").value = actingCard;
-                        document.getElementById("ability").value = chosenAbility;
-                        document.getElementById("ability_target").value = cell.dataset.id;
-
-                        // reset flow
-                        actingCard = null;
-                        chosenAbility = null;
-
-                        waitingForActor = true;
-                        waitingForAbility = false;
-                        waitingForTarget = false;
-
-                        document.querySelectorAll(".armory_checkbox").forEach(a => a.checked = false);
-
-                        document.getElementById("game_form").submit();
-                    }
-                });
-            });
-
-            // ==========================================================
-            // GRID CELL HIGHLIGHTING
-            // ==========================================================
-            document.querySelectorAll(".cell-morpion").forEach(cell => {
-                cell.addEventListener("click", function () {
-
-                    // BLOCK ARMAGEDDON CELLS
-                    if (cell.classList.contains("armageddon-locked")) return;
-
-                    const team = parseInt(this.dataset.team || 0);
-
-                    if (team !== currentPlayer && team !== 0) {
-                        return;
-                    }
-
-                    if (this.classList.contains("selected")) {
-                        this.classList.remove("selected");
-                        return;
-                    }
-
-                    document.querySelectorAll(".cell-morpion").forEach(c => {
-                        c.classList.remove("selected");
-                    });
-
-                    this.classList.add("selected");
-                });
-            });
-        </script>
+       <script src="{{ SESSION['DIRECTORY'] }}/templates/jeu_avance.js"></script>
     </body>
 </html>

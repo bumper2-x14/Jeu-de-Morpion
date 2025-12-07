@@ -320,7 +320,6 @@ body {
     transition: width .35s ease-out;
 }
 
-/* MANA CIRCLE (NEW) - REPOSITIONED */
 .mana_circle {
     position: absolute; 
     /* Repositioned to be closer to the bottom, outside the image area */
@@ -359,16 +358,6 @@ body {
     box-shadow: 0 0 10px gold;
 }
 
-/*====================================================*/
-/* RESPONSIVE */
-/*====================================================*/
-
-@media (max-width: 800px) {
-    .card { width: 130px; height: 180px; }
-}
-@media (max-width: 600px) {
-    .card { width: 45%; height: 180px; }
-}
 
 /*====================================================*/
 /* PLAYER DECK POSITIONS */
@@ -569,23 +558,39 @@ body {
 
 /* ---------- TURN TRACKER & TEAM HIGHLIGHT ---------- */
 
-.turn-tracker {
-    text-align: center;
-    margin-top: -160px;
-    font-weight: bold;
-    color: #f5deb3;
-    z-index: 1;
-    position: relative;
+/* BOX containing everything */
+.turn-tracker-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(4px);
+    width: fit-content;
+    margin: 0 auto;
+    margin-top: -195px;
 }
 
+/* Main block */
+.turn-tracker {
+    text-align: center;
+    font-weight: bold;
+    color: #f5deb3;
+}
+
+/* Team names line */
 .turn-tracker .teams-row {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 12px;
-    margin-bottom: 6px;
+    margin-top: 5px;
+    margin-bottom: 20px;
 }
 
+/* Team name pill */
 .team-name {
     padding: 6px 12px;
     border-radius: 8px;
@@ -596,7 +601,7 @@ body {
     transition: transform .18s ease, box-shadow .18s ease;
 }
 
-/* highlight active team */
+/* Active highlight */
 .team-name.active {
     transform: scale(1.06);
     box-shadow: 0 0 12px rgba(209,160,35,0.35);
@@ -605,11 +610,21 @@ body {
     background: linear-gradient(90deg, #b89e67, #d1a023);
 }
 
-/* small vs separator */
-.vs { color: rgba(245, 222, 179, 0.6); font-weight: normal; }
+.vs {
+    color: rgba(245, 222, 179, 0.6);
+    font-weight: normal;
+}
 
-/* turn count line */
-.turn-count { margin-top: 4px; font-size: 1.05rem; color: #f5deb3; }
+.turn-count {
+    margin-top: 4px;
+    font-size: 1.05rem;
+    color: #f5deb3;
+}
+
+.game_exit {
+    margin-left: 100px;
+}
+
 
 /* ---------- MODAL FIN DE PARTIE ---------- */
 .modal-overlay {
@@ -666,8 +681,9 @@ body {
     border-color: gold;
 }
 
-/* Small responsive tweaks for modal on phone */
-@media (max-width: 520px) {
-    .modal { padding: 12px; border-radius: 8px; }
-    .teams-row { gap: 8px; }
+.highlight-armory {
+    outline: 3px solid gold;
+    box-shadow: 0 0 18px gold;
+    border-radius: 8px;
 }
+

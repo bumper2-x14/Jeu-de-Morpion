@@ -2,42 +2,78 @@
 {% block main_block %}
 
 <div class="eq_name"> <h1>{{ REQUEST_VARS['sel_equipe'][0][1] }}</h1> </div>
-<div class="team_hist_section">
-    <ul>
-        {% for t in REQUEST_VARS['team_hist'] %}
-            <li>{{ t[0] }} vs {{ t[1] }} winner: {{ t[2] }} time : {{ t[5] }}  </li>
-        {% endfor %}
-    </ul>    
-</div>
 
+<div class="team-details-container">
+    
+    <!-- Section : historique des parties de l'équipe -->
+    <div class="team_hist_section">
+        <h3>Historique des parties</h3>
+        <ul>
+            {% for t in REQUEST_VARS['team_hist'] %}
+                <li>
+                    <!-- Affiche les noms des deux équipes du match -->
+                    <span class="match-teams">
+                        <span class="team-a">{{ t[0] }}</span>
+                        <span class="match-separator">vs</span>
+                        <span class="team-b">{{ t[2] }}</span>  </span>
 
-{% if REQUEST_VARS['eq_morps'] %}
-<div class="eq_deck">
-    {% for inst in REQUEST_VARS['eq_morps'] %}
-        <div class="card" style="--width-size: 120px; --height-size: 170px;">
-            <div class="card_inner">
-                <div class="card_front" style="--card-front-color: {{ REQUEST_VARS['sel_equipe'][0][2] }}">
-                    <div class="card_image">
-                        <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[1] }}" alt="{{ inst[0] }}" width="100" height="100">
+                    <!-- Indique le gagnant du match (ou "Sans Gagnant") -->
+                    <span class="match-winner">
+                        Gagnant: 
+                        <span class="{% if t[4] == t[0] or t[4] == t[2] %}winner-name{% endif %}">
+                            {{ t[4] or "Sans Gagnant" }}
+                        </span>
+                    </span>
+
+                    <!-- Horodatage de la partie (heure) -->
+                    <span class="match-time">
+                        {{ t[5].strftime("%H:%M:%S") }} </span>
+                    
+                    <!-- Lien vers le journal détaillé de la partie -->
+                    <span class="journal_link">
+                        <a href="/journal?team_journal_id={{ t[6] }}">📜</a>
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>    
+    </div>
+
+    <!-- Section : affichage du deck (morpions) de l'équipe -->
+    {% if REQUEST_VARS['eq_morps'] %}
+    <div class="eq_deck">
+        {% for inst in REQUEST_VARS['eq_morps'] %}
+            <!-- Carte individuelle : image + infos -->
+            <div class="card" style="--width-size: 120px; --height-size: 170px;">
+                <div class="card_inner">
+                    <div class="card_front" style="--card-front-color: {{ REQUEST_VARS['sel_equipe'][0][2] }}">
+                        <!-- Image du morpion -->
+                        <div class="card_image">
+                            <img src="{{ SESSION['DIRECTORY'] }}/static/img/{{ inst[1] }}" alt="{{ inst[0] }}" width="100" height="100">
+                        </div>
+
+                        <!-- Nom du morpion visible -->
+                        <div class="card_name">
+                            <p>{{ inst[0] }}</p>
+                        </div>
                     </div>
-                    <div class="card_name">
-                        <p>{{ inst[0] }}</p>
+
+                    <!-- Face cachée : statistiques détaillées -->
+                    <div class="card_back">
+                        <p>
+                            <strong>PV:</strong> {{ inst[2] }}<br>
+                            <strong>ATT:</strong> {{ inst[3] }}<br>
+                            <strong>MANA:</strong> {{ inst[4] }}<br>
+                            <strong>REU:</strong> {{ inst[5] }}
+                        </p>
                     </div>
-                </div>
-                <div class="card_back">
-                    <p>
-                        <strong>PV:</strong> {{ inst[2] }}<br>
-                        <strong>ATT:</strong> {{ inst[3] }}<br>
-                        <strong>MANA:</strong> {{ inst[4] }}<br>
-                        <strong>REU:</strong> {{ inst[5] }}
-                    </p>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>Aucun Morpion trouvé.</p>
+    {% endif %}
+    
 </div>
-{% else %}
-    <p>Aucun Morpion trouvé.</p>
-{% endif %}
 
 {% endblock %}

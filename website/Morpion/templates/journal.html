@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block main_block %}
+    <h3 class="journal_main_title">Journal des actions</h3>
+    <div class="journal_section">
+        <ul class="journal-list">
+            {% for entry in REQUEST_VARS['journal_entries'] %}
+                <li class="journal-item">
+                    <span class="journal-index">{{ entry[0] + 1 }}.</span>
+                    <span class="journal-text">{{ entry[1] }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

@@ -52,3 +52,8 @@ template = "templates/jeu_avance.html"
 url = "historique"
 controleur = "controleurs/historique.py"
 template = "templates/historique.html"
+
+[[routes]]
+url = "journal"
+controleur = "controleurs/journal.py"
+template = "templates/journal.html"
